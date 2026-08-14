@@ -1,0 +1,14 @@
+{
+  "name": "@ming/data-layer",
+  "version": "1.0.0",
+  "main": "index.ts",
+    "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.0.0"
+  },
+  "devDependencies": {
+    "@ming/biz-common-net-api": "workspace:*"
+  }
+}

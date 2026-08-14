@@ -1,0 +1,12 @@
+{
+  "name": "@ming/biz-common-net-api",
+  "version": "1.0.0",
+  "main": "index.ts",
+    "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ming/core-network": "workspace:*",
+    "@ming/biz-common-net": "workspace:*"
+  }
+}

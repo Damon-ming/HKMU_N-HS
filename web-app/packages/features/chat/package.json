@@ -1,0 +1,16 @@
+{
+  "name": "@ming/features-chat",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ming/data-layer": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@ming/biz-common-net-api": "workspace:*"
+  }
+}

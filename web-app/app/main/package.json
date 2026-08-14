@@ -1,0 +1,20 @@
+{
+  "name": "@ming_app_main",
+  "private": true,
+
+  "dependencies": {
+    "@ming/features-chat": "workspace:*",
+    "@ming/biz-common-net-api":"workspace:*",
+    "@ming/data-layer":"workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  }
+}

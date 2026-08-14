@@ -1,0 +1,15 @@
+{
+  "name": "ming-web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm dev:main",
+    "dev:main": "cd app/main && pnpm dev",
+    "build": "cd app/main && pnpm build"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "typescript": "^5.7.0"
+  }
+}

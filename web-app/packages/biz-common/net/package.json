@@ -1,0 +1,16 @@
+{
+  "name": "@ming/biz-common-net",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@ming/core-network": "workspace:*",
+    "axios": "^1.7.7"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
