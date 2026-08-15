@@ -6,16 +6,15 @@ export { initNetApi} from './init'
 // 2. 导出常用业务网络类型（来自 biz-common-net）
 export type {
   BizApiResponse,
+  BaseRequest,
   BizResult,
   ErrDataResponse,
   BizRequestConfig,
   BizHttpClientConfig,
   ClientErrData,
   BizHttp,
+  ClientErrorCode, BizCodeRange
 } from '@ming/biz-common-net'
-
-// 3. 导出核心枚举（来自 biz-common-net）
-export { ClientErrorCode, BizCodeRange } from '@ming/biz-common-net'
 
 /**
  * 导出全局网络 Client 实例

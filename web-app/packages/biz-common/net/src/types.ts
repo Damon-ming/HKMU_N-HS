@@ -11,6 +11,11 @@ export type BizRequestConfig = Omit<RequestConfig, 'url' | 'method'> & {
   timeout?: number
 }
 
+export interface BaseRequest {
+  requestId?: string
+  requestedAt?: number
+}
+
 /**
  * 全局启动/初始化网络配置 (BizHttpClientConfig)
  * 继承 core 的 HttpClientConfig，并定义业务启动层需要的字段
