@@ -1,7 +1,8 @@
 import React from "react";
-import { chatMessageHook, chatUploadHook } from "../hook";
+import { chatMessageHook } from "../hook";
 
-export const ChatChatroom: React.FC = () => {
+export interface ChatChatroomProps { fileName: string; uploading: boolean; uploadError: string }
+export const ChatChatroom: React.FC<ChatChatroomProps> = ({ fileName, uploading, uploadError }) => {
   const {
     input,
     setInput,
@@ -10,12 +11,6 @@ export const ChatChatroom: React.FC = () => {
     send,
     error: messageError,
   } = chatMessageHook();
-  const {
-    fileName,
-    uploading,
-    handleFileChange,
-    error: uploadError,
-  } = chatUploadHook();
   const error = messageError || uploadError;
   return (
     <main
@@ -43,16 +38,6 @@ export const ChatChatroom: React.FC = () => {
         )}
         {error && <p role="alert">{error}</p>}
         <footer className="feature-composer">
-          <label aria-label="上传图片">
-            ＋
-            <input
-              hidden
-              multiple
-              accept="image/*"
-              type="file"
-              onChange={(e) => handleFileChange(e.target.files)}
-            />
-          </label>
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -63,7 +48,7 @@ export const ChatChatroom: React.FC = () => {
               }
             }}
             placeholder={
-              uploading ? "正在上传图片..." : fileName || "输入消息..."
+              uploading ? "正在上传文件..." : fileName || "输入消息..."
             }
             disabled={uploading || sending}
           />
@@ -72,10 +57,8 @@ export const ChatChatroom: React.FC = () => {
             aria-label="发送消息"
             disabled={uploading || sending}
           >
-            ↑
           </button>
         </footer>
-        <p className="feature-hint">Enter 发送 · Shift + Enter 换行</p>
       </section>
     </main>
   );

@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { ChatDrawer } from "@ming/features-chat-drawer";
-import { ChatChatroom } from "@ming/features-chat-chatroom";
+import { ChatChatroom, chatUploadHook } from "@ming/features-chat-chatroom";
 
 export const ChatPage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [chatKey, setChatKey] = useState(0);
+  const upload = chatUploadHook();
   return (
     <div className="feature-chat-page">
       <ChatDrawer
         open={drawerOpen}
         onToggle={() => setDrawerOpen((value) => !value)}
         onNewChat={() => setChatKey((value) => value + 1)}
+        onUploadFile={upload.handleFileChange}
+        uploading={upload.uploading}
       />
-      <ChatChatroom key={chatKey} />
+      <ChatChatroom key={chatKey} fileName={upload.fileName} uploading={upload.uploading} uploadError={upload.error} />
       <style>{styles}</style>
       <style>{motionStyles}</style>
     </div>
@@ -25,6 +28,7 @@ const styles = `
 
 const motionStyles = `
 .feature-chat-page{position:relative;isolation:isolate;background-image:radial-gradient(circle at 75% 0%,rgba(224,228,255,.9),transparent 34%),radial-gradient(circle at 30% 100%,rgba(237,225,255,.6),transparent 28%);}
+.feature-upload-file{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:38px;margin-top:9px;border:1px dashed #cfd5ea;border-radius:11px;color:#6874c9;background:#f8f9ff;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}.feature-upload-file:hover{border-color:#8993ef;background:#f0f2ff;transform:translateY(-1px)}.feature-collapsed-upload{display:grid;place-items:center;width:40px;height:40px;border:1px solid #e1e6f0;border-radius:12px;background:rgba(255,255,255,.9);color:#5965dc;box-shadow:0 8px 20px #25344b12;cursor:pointer;transition:.2s}.feature-collapsed-upload:hover{background:#f0f2ff;transform:translateY(-2px)}
 .feature-chat-page:before,.feature-chat-page:after{content:"";position:absolute;z-index:-1;border-radius:999px;pointer-events:none;filter:blur(2px);animation:feature-float 10s ease-in-out infinite}
 .feature-chat-page:before{width:280px;height:280px;right:-90px;top:-120px;background:#dfe3ff;opacity:.55}.feature-chat-page:after{width:200px;height:200px;left:28%;bottom:-130px;background:#eadfff;opacity:.5;animation-delay:-4s}
 .feature-chat-drawer{position:relative;z-index:1;animation:feature-drawer-in .55s cubic-bezier(.22,1,.36,1)}

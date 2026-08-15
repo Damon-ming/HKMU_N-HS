@@ -7,6 +7,8 @@ export interface ChatDrawerProps {
   open: boolean;
   onToggle: () => void;
   onNewChat: () => void;
+  onUploadFile: (fileList?: FileList | null) => void;
+  uploading: boolean;
   onSelectChat?: (id: string) => void;
 }
 
@@ -15,6 +17,8 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   onToggle,
   onNewChat,
   onSelectChat,
+  onUploadFile,
+  uploading,
 }) => {
   const [search, setSearch] = useState("");
   const items = useMemo(
@@ -34,6 +38,10 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           <button className="feature-new-chat" onClick={onNewChat}>
             ＋ 新建对话
           </button>
+          <label className="feature-upload-file">
+            <span>{uploading ? "◌ 正在上传文件..." : "⌁ 上传文件"}</span>
+            <input hidden multiple accept="image/*" type="file" onChange={(e) => onUploadFile(e.target.files)} />
+          </label>
           <label className="feature-search">
             ⌕
             <input
@@ -73,6 +81,10 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           <button onClick={onNewChat} aria-label="新建对话">
             ＋
           </button>
+          <label className="feature-collapsed-upload" aria-label="上传图片">
+            ⌁
+            <input hidden multiple accept="image/*" type="file" onChange={(e) => onUploadFile(e.target.files)} />
+          </label>
         </div>
       )}
     </aside>

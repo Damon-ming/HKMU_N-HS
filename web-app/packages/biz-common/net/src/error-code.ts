@@ -19,11 +19,11 @@ export enum ClientErrorCode {
 
 /** 后端业务 bizCode 区间（包含边界） */
 export enum BizCodeRange {
-  SUCCESS_204 = 20000,
   SUCCESS_MIN = 20000,
-  SUCCESS_MAX = 29999,
+  SUCCESS_204 = SUCCESS_MIN,
+  SUCCESS_MAX = 39999,
   FAIL_MIN = 40000,
-  FAIL_MAX = 49999,
+  FAIL_MAX = 50000,
 }
 
 /** 获取业务错误码分类 */
