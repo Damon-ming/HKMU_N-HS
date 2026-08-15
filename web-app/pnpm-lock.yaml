@@ -143,6 +143,9 @@ importers:
       '@ming/features-search-api':
         specifier: workspace:*
         version: link:../search-api
+      '@ming/features-upload-api':
+        specifier: workspace:*
+        version: link:../upload-api
       react:
         specifier: ^18.2.0
         version: 18.3.1

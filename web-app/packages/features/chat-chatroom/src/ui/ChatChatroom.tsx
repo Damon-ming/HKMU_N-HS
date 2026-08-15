@@ -1,8 +1,8 @@
 import React from "react";
 import { chatMessageHook } from "../hook";
 
-export interface ChatChatroomProps { fileName: string; uploading: boolean; uploadError: string }
-export const ChatChatroom: React.FC<ChatChatroomProps> = ({ fileName, uploading, uploadError }) => {
+export interface ChatChatroomProps {}
+export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
   const {
     input,
     setInput,
@@ -11,7 +11,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = ({ fileName, uploading,
     send,
     error: messageError,
   } = chatMessageHook();
-  const error = messageError || uploadError;
+  const error = messageError;
   return (
     <main
       className={`feature-chatroom ${messages.length ? "has-messages" : "is-empty"}`}
@@ -48,14 +48,14 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = ({ fileName, uploading,
               }
             }}
             placeholder={
-              uploading ? "正在上传文件..." : fileName || "输入消息..."
+              "输入消息..."
             }
-            disabled={uploading || sending}
+            disabled={sending}
           />
           <button
             onClick={() => void send()}
             aria-label="发送消息"
-            disabled={uploading || sending}
+            disabled={sending}
           >
           </button>
         </footer>

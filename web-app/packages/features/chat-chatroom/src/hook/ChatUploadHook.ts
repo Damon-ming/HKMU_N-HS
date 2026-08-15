@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useUploadApi } from "@ming/features-upload-api";
 
 export function chatUploadHook() {
-  const [fileName, setFileName] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
@@ -10,11 +9,11 @@ export function chatUploadHook() {
     const files = fileList ? Array.from(fileList) : [];
     if (!files.length) return;
 
-    setFileName(files.map((file) => file.name).join(", "));
     setError("");
     setUploading(true);
     try {
       await useUploadApi(files);
+      window.alert("文件上传成功");
     } catch (e) {
       setError(e instanceof Error ? e.message : "文件上传失败");
     } finally {
@@ -22,5 +21,5 @@ export function chatUploadHook() {
     }
   };
 
-  return { fileName, uploading, error, handleFileChange };
+  return { uploading, error, handleFileChange };
 }

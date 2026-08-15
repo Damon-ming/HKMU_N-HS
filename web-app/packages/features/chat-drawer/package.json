@@ -6,7 +6,8 @@
   "dependencies": {
     "@ming/features-history-api": "workspace:*",
     "@ming/features-search-api": "workspace:*",
-    "@ming/features-account-api": "workspace:*"
+    "@ming/features-account-api": "workspace:*",
+    "@ming/features-upload-api": "workspace:*"
   },
   "peerDependencies": { "react": "^18.2.0" }
 }

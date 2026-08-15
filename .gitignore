@@ -1,37 +1,60 @@
-# 依赖包（最重要！所有node_modules全部忽略）
+# ========== 前端相关 ==========
 node_modules/
 **/node_modules/
 
-# 构建输出目录
 dist/
 build/
 out/
 /.next/
 /.nuxt/
 
-# 环境变量（不要上传密钥）
+# 环境变量
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# 日志
+# 前端日志
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE - VSCode
-.vscode/
+# ts缓存
+*.tsbuildinfo
+
+# ========== Python 后端相关 ==========
+# py缓存（解决所有 __pycache__）
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# python虚拟环境
+venv/
+.venv/
+env/
+.env/
+
+# python打包产物
+*.egg-info/
+*.egg
+
+# 业务上传文件目录（后端存放知识库文件，禁止提交）
+**/knowledges/
+
+# ========== 全局杂项 ==========
+# pnpm本地缓存
+.pnpm-store/
+
+# IDE
+**/.vscode/
 *.swp
 *.swo
+
+# 系统文件
 .DS_Store
 .Thumbs.db
-
-# 操作系统缓存
-.DS_Store
 desktop.ini
-
-# ts 缓存
-*.tsbuildinfo

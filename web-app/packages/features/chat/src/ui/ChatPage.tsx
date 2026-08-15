@@ -1,21 +1,18 @@
 import React, { useState } from "react";
 import { ChatDrawer } from "@ming/features-chat-drawer";
-import { ChatChatroom, chatUploadHook } from "@ming/features-chat-chatroom";
+import { ChatChatroom } from "@ming/features-chat-chatroom";
 
 export const ChatPage: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [chatKey, setChatKey] = useState(0);
-  const upload = chatUploadHook();
   return (
     <div className="feature-chat-page">
       <ChatDrawer
         open={drawerOpen}
         onToggle={() => setDrawerOpen((value) => !value)}
         onNewChat={() => setChatKey((value) => value + 1)}
-        onUploadFile={upload.handleFileChange}
-        uploading={upload.uploading}
       />
-      <ChatChatroom key={chatKey} fileName={upload.fileName} uploading={upload.uploading} uploadError={upload.error} />
+      <ChatChatroom key={chatKey} />
       <style>{styles}</style>
       <style>{motionStyles}</style>
     </div>
