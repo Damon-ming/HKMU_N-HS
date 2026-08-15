@@ -1,5 +1,5 @@
 import React from "react";
-import { chatRoomHook } from "../hook"
+import { chatRoomHook } from "../hook";
 
 export const ChatChatroom: React.FC = () => {
   const {
@@ -63,7 +63,11 @@ export const ChatChatroom: React.FC = () => {
             }
             disabled={uploading || sending}
           />
-          <button onClick={() => void send()} aria-label="发送消息" disabled={uploading || sending}>
+          <button
+            onClick={() => void send()}
+            aria-label="发送消息"
+            disabled={uploading || sending}
+          >
             ↑
           </button>
         </footer>
