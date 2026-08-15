@@ -2,7 +2,15 @@
   "name": "@ming/features-chat-chatroom",
   "version": "0.0.1",
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
-  "dependencies": { "@ming/features-upload-api": "workspace:*" },
-  "peerDependencies": { "react": "^18.2.0" }
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ming/features-upload-api": "workspace:*",
+    "@ming/data-layer": "workspace:*",
+    "@ming/biz-common-net-api": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  }
 }

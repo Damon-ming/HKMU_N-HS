@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@ming/features-upload':
+        specifier: workspace:*
+        version: link:packages/features/upload
       '@types/react':
         specifier: ^19.2.18
         version: 19.2.18
@@ -101,12 +104,6 @@ importers:
 
   packages/features/chat:
     dependencies:
-      '@ming/biz-common-net-api':
-        specifier: workspace:*
-        version: link:../../biz-common/net-api
-      '@ming/data-layer':
-        specifier: workspace:*
-        version: link:../../data-layer
       '@ming/features-chat-chatroom':
         specifier: workspace:*
         version: link:../chat-chatroom
@@ -122,6 +119,12 @@ importers:
 
   packages/features/chat-chatroom:
     dependencies:
+      '@ming/biz-common-net-api':
+        specifier: workspace:*
+        version: link:../../biz-common/net-api
+      '@ming/data-layer':
+        specifier: workspace:*
+        version: link:../../data-layer
       '@ming/features-upload-api':
         specifier: workspace:*
         version: link:../upload-api
@@ -169,6 +172,9 @@ importers:
 
   packages/features/upload:
     dependencies:
+      '@ming/biz-common-net-api':
+        specifier: workspace:*
+        version: link:../../biz-common/net-api
       '@ming/data-layer':
         specifier: workspace:*
         version: link:../../data-layer

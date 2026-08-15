@@ -1,1 +1,1 @@
-export { _uploadFile } from './upload.api'
+export { uploadFile } from './upload.api'

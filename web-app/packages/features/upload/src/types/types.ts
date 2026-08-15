@@ -14,9 +14,5 @@ export interface UploadResponse {
   type: string
 }
 
-export interface UploadRequest {
-  file: File
-  fileName: string
-  contentType: string
-  size: number
-}
+import type { BaseRequest } from '@ming/biz-common-net-api'
+export interface UploadRequest extends BaseRequest { files: File[] }
