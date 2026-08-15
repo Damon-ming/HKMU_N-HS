@@ -1,7 +1,7 @@
-// packages/features/chat/src/hooks/use-chat-controller.ts
+// Chat data and interaction logic.
 import { useState, useCallback } from 'react'
-import { useSendMessageMutation } from './use-send-message'
-import type { ChatMessageEntity, SendMessageDto } from '../models/chat'
+import { useSendMessageMutation } from './useSendMessage'
+import type { ChatMessageEntity, SendMessageDto } from '../types/chat.types'
 
 // 扩展前端消息模型，加入状态管理
 export interface RenderChatMessage extends ChatMessageEntity {

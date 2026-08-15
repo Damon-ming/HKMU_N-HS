@@ -1,4 +1,4 @@
-// packages/features/chat/src/models/chat.ts
+// Chat domain types.
 
 /** 接口请求 DTO */
 export interface SendMessageDto {

@@ -4,13 +4,13 @@ import React from 'react'
 
 import { DataProvider } from '@ming/data-layer'
 // 2. 引入业务 Feature 页面
-import { ChatView } from '@ming/features-chat'
+import { ChatPage } from '@ming/features-chat'
 
 export const App: React.FC = () => {
   return (
     <DataProvider>
       {/* 业务/路由挂载点 */}
-      <ChatView />
+      <ChatPage />
     </DataProvider>
   )
 }

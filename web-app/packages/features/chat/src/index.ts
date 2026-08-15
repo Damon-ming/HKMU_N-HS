@@ -1,4 +1,5 @@
-export { ChatView } from './views/ChatView'
-export { chatService } from './services/chat-service'
-export { useChatController } from './hooks/use-chat-controller'
-export * from './models/chat'
+export { ChatPage } from './ui/ChatPage'
+export { chatApi } from './api/chat.api'
+export { useChatController } from './hook/useChatController'
+export * from './types/chat.types'
+

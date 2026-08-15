@@ -1,7 +1,7 @@
-// packages/features/chat/src/hooks/use-send-message.ts
+// Chat message mutation logic.
 import { QueryFactory, BaseMutationOptions } from '@ming/data-layer'
-import { chatService } from '../services/chat-service'
-import type { SendMessageDto, ChatMessageEntity } from '../models/chat'
+import { chatApi } from '../api/chat.api'
+import type { SendMessageDto, ChatMessageEntity } from '../types/chat.types'
 
 /**
  * 封装 Chat 发送消息 Mutation
@@ -10,7 +10,8 @@ export function useSendMessageMutation(
   options?: BaseMutationOptions<ChatMessageEntity, SendMessageDto>
 ) {
   return QueryFactory.createMutation<ChatMessageEntity, SendMessageDto>(
-    (variables) => chatService.sendMessage(variables),
+    (variables) => chatApi.sendMessage(variables),
     options
   )
 }
+

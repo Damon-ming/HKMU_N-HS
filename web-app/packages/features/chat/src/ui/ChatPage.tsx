@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useChatController } from '../hooks/use-chat-controller'
+import { useChatController } from '../hook/useChatController'
 
-export const ChatView: React.FC = () => {
+export const ChatPage: React.FC = () => {
   const { inputText, setInputText, messages, isLoading, handleSend, resetConversation } = useChatController()
   const [drawerOpen, setDrawerOpen] = useState(true)
   const [search, setSearch] = useState('')
