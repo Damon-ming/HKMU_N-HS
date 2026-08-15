@@ -3,5 +3,6 @@
   "version": "0.0.1",
   "type": "module",
   "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@ming/features-upload-api": "workspace:*" },
   "peerDependencies": { "react": "^18.2.0" }
 }

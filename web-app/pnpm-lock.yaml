@@ -91,6 +91,14 @@ importers:
         specifier: workspace:*
         version: link:../biz-common/net-api
 
+  packages/features/account: {}
+
+  packages/features/account-api:
+    dependencies:
+      '@ming/features-account':
+        specifier: workspace:*
+        version: link:../account
+
   packages/features/chat:
     dependencies:
       '@ming/biz-common-net-api':
@@ -114,15 +122,58 @@ importers:
 
   packages/features/chat-chatroom:
     dependencies:
+      '@ming/features-upload-api':
+        specifier: workspace:*
+        version: link:../upload-api
       react:
         specifier: ^18.2.0
         version: 18.3.1
 
   packages/features/chat-drawer:
     dependencies:
+      '@ming/features-account-api':
+        specifier: workspace:*
+        version: link:../account-api
+      '@ming/features-history-api':
+        specifier: workspace:*
+        version: link:../history-api
+      '@ming/features-search-api':
+        specifier: workspace:*
+        version: link:../search-api
       react:
         specifier: ^18.2.0
         version: 18.3.1
+
+  packages/features/history:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+
+  packages/features/history-api:
+    dependencies:
+      '@ming/features-history':
+        specifier: workspace:*
+        version: link:../history
+
+  packages/features/search: {}
+
+  packages/features/search-api:
+    dependencies:
+      '@ming/features-history-api':
+        specifier: workspace:*
+        version: link:../history-api
+      '@ming/features-search':
+        specifier: workspace:*
+        version: link:../search
+
+  packages/features/upload: {}
+
+  packages/features/upload-api:
+    dependencies:
+      '@ming/features-upload':
+        specifier: workspace:*
+        version: link:../upload
 
 packages:
 
