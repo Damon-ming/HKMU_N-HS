@@ -11,6 +11,10 @@ export interface RenderChatMessage extends ChatMessageEntity {
 export function useChatController() {
   const [inputText, setInputText] = useState('')
   const [messages, setMessages] = useState<RenderChatMessage[]>([])
+  const resetConversation = useCallback(() => {
+    setMessages([])
+    setInputText('')
+  }, [])
 
   const { mutate: sendMessage, isPending } = useSendMessageMutation({
     onSuccess: (res, variables) => {
@@ -73,6 +77,7 @@ export function useChatController() {
     setInputText,
     messages,
     isLoading: isPending,
-    handleSend
+    handleSend,
+    resetConversation
   }
 }
