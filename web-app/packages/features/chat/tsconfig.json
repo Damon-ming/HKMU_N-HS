@@ -1,4 +1,4 @@
 {
   "extends": "../../../tsconfig.json",
-  "include": ["src"]
+  "include": ["src", "../chat-chatroom/src/types/chat.types.ts"]
 }

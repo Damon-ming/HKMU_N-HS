@@ -6,13 +6,11 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@ming/data-layer": "workspace:*",
     "@ming/features-chat-drawer": "workspace:*",
     "@ming/features-chat-chatroom": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "@ming/biz-common-net-api": "workspace:*"
+    "react-dom": "^18.2.0"
   }
 }

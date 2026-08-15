@@ -1,20 +1,23 @@
-import React, { useState } from 'react'
-import { ChatDrawer } from '@ming/features-chat-drawer'
-import { ChatChatroom } from '@ming/features-chat-chatroom'
+import React, { useState } from "react";
+import { ChatDrawer } from "@ming/features-chat-drawer";
+import { ChatChatroom } from "@ming/features-chat-chatroom";
 
 export const ChatPage: React.FC = () => {
-  const [drawerOpen, setDrawerOpen] = useState(true)
-  const [chatKey, setChatKey] = useState(0)
-  return <div className="feature-chat-page">
-    <ChatDrawer open={drawerOpen} onToggle={() => setDrawerOpen(value => !value)} onNewChat={() => setChatKey(value => value + 1)} />
-    <ChatChatroom key={chatKey} />
-    <style>{styles}</style>
-  </div>
-}
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [chatKey, setChatKey] = useState(0);
+  return (
+    <div className="feature-chat-page">
+      <ChatDrawer
+        open={drawerOpen}
+        onToggle={() => setDrawerOpen((value) => !value)}
+        onNewChat={() => setChatKey((value) => value + 1)}
+      />
+      <ChatChatroom key={chatKey} />
+      <style>{styles}</style>
+    </div>
+  );
+};
 
 const styles = `
 *{box-sizing:border-box}html,body,#root{width:100%;height:100%;margin:0;overflow:hidden}.feature-chat-page{width:100%;height:100%;overflow:hidden;display:flex;background:#f8faff;color:#17202a;font-family:Inter,system-ui,sans-serif}.feature-chat-drawer{height:100%;width:272px;flex:none;display:flex;flex-direction:column;padding:20px 14px 14px;background:#fff;border-right:1px solid #e9edf4}.feature-drawer-top{display:flex;align-items:center;gap:10px;padding:0 7px 23px}.feature-brand,.feature-welcome>div{display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#5b7cff,#8d6cf0);box-shadow:0 8px 18px #5b7cff38}.feature-brand{width:34px;height:34px;border-radius:10px}.feature-drawer-top button{margin-left:auto;border:0;background:transparent;color:#9ca6b5;font-size:22px;cursor:pointer}.feature-new-chat{width:100%;height:42px;border:1px solid #dce3f1;border-radius:11px;background:#fff;color:#4965d7;font-weight:600;cursor:pointer}.feature-search{display:flex;gap:8px;margin:18px 3px 24px;padding:9px 11px;background:#f5f7fa;color:#a0aaba}.feature-search input{width:100%;border:0;outline:0;background:transparent}.feature-history-title{display:flex;justify-content:space-between;padding:0 8px 9px;color:#9aa4b1;font-size:11px}.feature-chat-drawer nav{min-height:0;flex:1;overflow-y:auto}.feature-history-item{display:flex;width:100%;gap:9px;padding:10px 9px;border:0;border-radius:9px;background:transparent;color:#687486;text-align:left;cursor:pointer}.feature-history-item small{margin-left:auto}.feature-user{display:flex;flex:none;gap:9px;align-items:center;margin-top:0;padding:12px 8px;border-top:1px solid #edf0f5}.feature-user>span{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#e8ecff;color:#596fd6}.feature-user small{display:block;color:#a0a9b6}.feature-collapsed-tools{position:fixed;top:18px;left:18px;display:flex;gap:8px;z-index:5}.feature-collapsed-tools button{width:38px;height:38px;border:1px solid #e1e6f0;border-radius:9px;background:#fff;color:#596fd6;cursor:pointer}.feature-chat-drawer.is-collapsed{width:0;padding:0;border:0}.feature-chatroom{min-width:0;min-height:0;height:100%;flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:40px 24px 22px}.feature-composer-area{width:min(880px,100%);display:flex;flex-direction:column;min-height:0}.feature-chatroom.is-empty{justify-content:center}.feature-chatroom.is-empty .feature-composer-area{align-items:center}.feature-chatroom.has-messages .feature-composer-area{flex:none}.feature-welcome{margin:auto;text-align:center}.feature-welcome>div{width:58px;height:58px;margin:auto;border-radius:18px;font-size:30px}.feature-welcome h1{font-size:30px}.feature-welcome p,.feature-hint{color:#8c97a6}.feature-messages{width:min(880px,100%);min-height:0;flex:1;overflow-y:auto;padding:20px}.feature-message{width:max-content;max-width:72%;margin:12px 0;padding:12px 15px;border-radius:15px;background:#f4f6f9;line-height:1.5}.feature-message.user{margin-left:auto;color:#fff;background:#5b7cff}.feature-composer{width:min(880px,100%);display:flex;gap:8px;padding:9px 10px;border:1px solid #dfe4ec;border-radius:16px;background:#fff;box-shadow:0 8px 30px #25344b12}.feature-composer button{width:34px;border:0;border-radius:10px;background:#5b7cff;color:#fff;font-size:20px;cursor:pointer}.feature-composer button:first-child{background:transparent;color:#8994a3}.feature-composer textarea{flex:1;resize:none;border:0;outline:0;line-height:24px;font:inherit}.feature-hint{font-size:11px}@media(max-width:720px){.feature-chat-drawer{position:fixed;z-index:4;inset:0 auto 0 0}.feature-chatroom{padding:20px 16px}.feature-message{max-width:84%}}
-`
-
-
-
+`;
