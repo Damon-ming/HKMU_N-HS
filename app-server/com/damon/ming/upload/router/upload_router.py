@@ -5,7 +5,7 @@ from schemas.response import BaseSuccessResponse, BaseFailedResponse
 from upload.schemas.bean import FileUploadRequest, FileUploadSuccessData, FileUploadFailedData
 from upload.service.upload_service import UploadService
 
-router = APIRouter(prefix="/v1/files", tags=["文件管理"])
+router = APIRouter(prefix="/api/v1/files", tags=["文件管理"])
 
 @router.post("/upload", response_model=BaseSuccessResponse[FileUploadSuccessData])
 async def save_files(

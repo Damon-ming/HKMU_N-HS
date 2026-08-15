@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from com.damon.ming.chat.schemas.chat_bean import ChatRequest
+from chat.schemas.bean import ChatRequest
 
 # 前缀设置为完整的业务路径
 router = APIRouter(prefix="/v1/llm", tags=["聊天模块"])

@@ -1,11 +1,12 @@
 import os
-from datetime import datetime
-from typing import List
+from pathlib import Path
+import uuid
 from fastapi import UploadFile
+from typing import List
 from upload.schemas.bean import FileUploadRequest
 
-UPLOAD_DIR = "./knowledges"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
+UPLOAD_DIR = Path(__file__).resolve().parents[4] / "knowledges"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 class UploadService:
     @staticmethod
@@ -22,16 +23,19 @@ class UploadService:
         saved_files = []
         for file in file_list:
             # 建议：可以重命名文件名，避免重名、路径穿越
-            safe_filename = file.filename
-            file_path = os.path.join(UPLOAD_DIR, safe_filename)
+            origin_name = Path(file.filename or "unnamed").name
+            file_uid = str(uuid.uuid4())
+            # 3. 磁盘真实文件名：uuid + 原始名称
+            store_name = f"{file_uid}__{origin_name}"
+            file_path = UPLOAD_DIR / store_name
 
             content = await file.read()
-            with open(file_path, "wb") as f:
+            with file_path.open("wb") as f:
                 f.write(content)
 
             saved_files.append({
-                "filename": safe_filename,
-                "save_path": file_path,
+                "filename": origin_name,
+                "save_path": str(file_path),
                 "file_size": len(content)
             })
         return saved_files
