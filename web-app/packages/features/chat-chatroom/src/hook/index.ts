@@ -1,1 +1,2 @@
-export { chatRoomHook } from './ChatRoomHook'
+export { chatMessageHook } from './ChatMessageHook'
+export { chatUploadHook } from './ChatUploadHook'

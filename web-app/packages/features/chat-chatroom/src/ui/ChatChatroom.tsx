@@ -1,18 +1,22 @@
 import React from "react";
-import { chatRoomHook } from "../hook";
+import { chatMessageHook, chatUploadHook } from "../hook";
 
 export const ChatChatroom: React.FC = () => {
   const {
     input,
     setInput,
-    fileName,
-    uploading,
-    error,
     sending,
     messages,
     send,
+    error: messageError,
+  } = chatMessageHook();
+  const {
+    fileName,
+    uploading,
     handleFileChange,
-  } = chatRoomHook();
+    error: uploadError,
+  } = chatUploadHook();
+  const error = messageError || uploadError;
   return (
     <main
       className={`feature-chatroom ${messages.length ? "has-messages" : "is-empty"}`}
