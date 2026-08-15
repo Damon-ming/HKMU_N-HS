@@ -167,7 +167,11 @@ importers:
         specifier: workspace:*
         version: link:../search
 
-  packages/features/upload: {}
+  packages/features/upload:
+    dependencies:
+      '@ming/data-layer':
+        specifier: workspace:*
+        version: link:../../data-layer
 
   packages/features/upload-api:
     dependencies:

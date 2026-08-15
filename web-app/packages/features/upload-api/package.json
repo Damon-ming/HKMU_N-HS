@@ -1,1 +1,11 @@
-{"name":"@ming/features-upload-api","version":"0.0.1","type":"module","exports":{".":"./src/index.ts"},"dependencies":{"@ming/features-upload":"workspace:*"}}
+{
+  "name": "@ming/features-upload-api",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@ming/features-upload": "workspace:*"
+  }
+}

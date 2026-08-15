@@ -1,1 +1,1 @@
-export {}
+export { uploadFile } from './useUpload'
