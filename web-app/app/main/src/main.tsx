@@ -20,7 +20,10 @@ async function startApp() {
     )
   } catch (error) {
     console.error('[App] Failed to start application:', error)
-    // 渲染全局降级/错误提示页面
+    const rootElement = document.getElementById('root')
+    if (rootElement) {
+      rootElement.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:24px;font-family:system-ui;color:#334155;background:#f8fafc"><section><h1 style="margin:0 0 8px;font-size:20px">应用启动失败</h1><p style="margin:0;color:#64748b">请刷新页面重试；详细错误信息请查看浏览器控制台。</p></section></main>'
+    }
   }
 }
 
