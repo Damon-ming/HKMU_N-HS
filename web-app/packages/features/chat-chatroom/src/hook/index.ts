@@ -1,1 +1,1 @@
-export { chatRoomHook as useChatRoomController } from './useChatRoomHook'
+export { chatRoomHook } from './ChatRoomHook'

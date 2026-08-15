@@ -1,5 +1,5 @@
 import React from "react";
-import { useChatRoomController } from "../hook";
+import { chatRoomHook } from "../hook"
 
 export const ChatChatroom: React.FC = () => {
   const {
@@ -12,7 +12,7 @@ export const ChatChatroom: React.FC = () => {
     messages,
     send,
     handleFileChange,
-  } = useChatRoomController();
+  } = chatRoomHook();
   return (
     <main
       className={`feature-chatroom ${messages.length ? "has-messages" : "is-empty"}`}

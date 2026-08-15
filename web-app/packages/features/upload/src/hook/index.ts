@@ -1,1 +1,1 @@
-export { uploadFile } from './useUpload'
+export { uploadFile } from './UploadHook'
