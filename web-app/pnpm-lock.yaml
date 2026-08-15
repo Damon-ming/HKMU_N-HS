@@ -99,12 +99,30 @@ importers:
       '@ming/data-layer':
         specifier: workspace:*
         version: link:../../data-layer
+      '@ming/features-chat-chatroom':
+        specifier: workspace:*
+        version: link:../chat-chatroom
+      '@ming/features-chat-drawer':
+        specifier: workspace:*
+        version: link:../chat-drawer
       react:
         specifier: ^18.2.0
         version: 18.3.1
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+
+  packages/features/chat-chatroom:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+
+  packages/features/chat-drawer:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
 
 packages:
 

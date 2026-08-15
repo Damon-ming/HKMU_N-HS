@@ -1,0 +1,7 @@
+{
+  "name": "@ming/features-chat-drawer",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "peerDependencies": { "react": "^18.2.0" }
+}
