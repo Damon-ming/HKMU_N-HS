@@ -6,7 +6,7 @@ from typing import List
 
 from llama_index.core import Document
 import pymupdf4llm
-from monitor.log import pin
+from ..monitor.log import pin
 
 class BaseDataSource(ABC):
     """数据源抽象：仅负责加载原始文档"""
@@ -18,13 +18,13 @@ class LocalPDFDataSource(BaseDataSource):
     """PDF文件加载实现，只负责读取PDF并转为Document，不做切块"""
     def __init__(
         self,
-        folder_path: str = "./knowledges",
+        folder_path: str,
         enable_image_extract: bool = False
     ):
         self.folder_path = folder_path
         self.enable_image_extract = enable_image_extract
-        self._ensure_dir_exists()
         self.logger = pin("LocalPDFDataSource")
+        self._ensure_dir_exists()
 
     def _ensure_dir_exists(self):
         if not os.path.exists(self.folder_path):
