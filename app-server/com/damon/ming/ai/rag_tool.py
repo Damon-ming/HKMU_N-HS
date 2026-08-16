@@ -1,16 +1,14 @@
-# app-server/com/damon/ming/ai/pipeline.py
+# app-server/com/damon/ming/ai/rag_tool.py
 # pip install llama-index tiktoken pymupdf4llm chromadb sentence-transformers ollama rank-bm25 transformers torch psycopg2-binary pyyaml
 # pgvector需要额外安装postgresql+pgvector扩展
 # 运行Ollama需本地启动11434服务，提前pull bge-m3、nomic-embed-text、qwen:1.8b等模型
+
 from typing import List
 from llama_index.core import Document
-# 注册器：启动时自动注册所有向量库、embedding、reranker
 from registry.db_registry import register_all_vector_dbs
 from registry.embedding_registry import register_all_embeddings
-# 配置
 from embedding.config import EmbeddingConfig
 from vector_db.config import VectorStoreConfig
-# 核心服务
 from embedding.BaseEmbeddingService import BaseEmbeddingService
 from vector_db.base_vector_db import BaseVectorStore
 from retriever.base_retriever import DenseRetriever, SparseRetriever
@@ -26,9 +24,7 @@ from tokenizer.base_tokenizer import BaseTokenizer
 from tokenizer.config import TokenizerConfig
 from registry.summary_registry import register_all_summarizers
 from summary.config import SummarizerConfig
-# 注册器补充
 from registry.rerank_registry import register_all_rerankers
-# 重排器配置
 from rerank.config import RerankerConfig
 
 # 1. 全局单例容器
@@ -170,7 +166,7 @@ class RAGContainer:
                 if token_cnt > single_section_token_threshold:
                     # 超长章节生成摘要
                     compressed_text = self.summarizer.summarize(text=full_section, max_summary_tokens=1200)
-                    full_context_parts.append(f"【长文档摘要】\n{compressed_text}")
+                    full_context_parts.append(compressed_text)
                 else:
                     full_context_parts.append(full_section)
 
@@ -181,6 +177,3 @@ class RAGContainer:
             final_context = self.section_recon.truncate_by_token(full_text, max_context_tokens)
 
         return final_context
-
-# 全局单例，项目启动只初始化一次
-rag_app = RAGContainer()
