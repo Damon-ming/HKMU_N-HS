@@ -28,25 +28,15 @@ class CrossEncoderModel:
         self.batch_size = batch_size
 
         self.logger.info(f"加载Rerank模型: {model_name}, device={self.device}, max_seq_len={max_seq_len}")
-        try:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name, local_files_only=True)
-            self.model = AutoModelForSequenceClassification.from_pretrained(model_name, local_files_only=True)
-            self.model.to(self.device)
-            self.model.eval()
-            self._fallback = False
-        except Exception as exc:
-            self.logger.warning(f"Rerank模型未缓存，启用词法重排兜底: {exc}")
-            self.tokenizer = None
-            self.model = None
-            self._fallback = True
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
+        self.model.to(self.device)
+        self.model.eval()
 
     def score_pairs(self, query: str, texts: List[str]) -> List[float]:
         if not texts:
             return []
 
-        if self._fallback:
-            query_terms = set(query.lower().split())
-            return [sum(1 for term in query_terms if term in text.lower()) / max(len(query_terms), 1) for text in texts]
         all_scores = []
         # 分批推理，避免OOM
         for start in range(0, len(texts), self.batch_size):

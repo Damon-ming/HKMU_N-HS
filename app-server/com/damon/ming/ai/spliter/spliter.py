@@ -6,8 +6,8 @@ from typing import List, Optional
 from llama_index.core import Document
 from llama_index.core.node_parser import MarkdownNodeParser, SentenceSplitter, TokenTextSplitter
 from llama_index.core.schema import TextNode
-from monitor.log import pin
-from tokenizer.base_tokenizer import BaseTokenizer
+from ..monitor.log import pin
+from ..tokenizer.base_tokenizer import BaseTokenizer
 
 class BaseDocumentSplitter(ABC):
     """文档分割器抽象接口"""
@@ -97,6 +97,8 @@ class MarkdownDocumentSplitter(BaseDocumentSplitter):
 
                 # 第一步：Markdown 按标题切分出原始章节
                 md_section_nodes = self.md_parser.get_nodes_from_documents([doc])
+                if not md_section_nodes:
+                    md_section_nodes = [TextNode(text=doc_text)]
                 
                 self.logger.info(
                     f"[Splitter] 处理文档: {file_name} | "

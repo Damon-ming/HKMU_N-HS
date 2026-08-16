@@ -1,31 +1,29 @@
 # app-server/com/damon/ming/ai/rag_tool.py
-# pip install llama-index tiktoken pymupdf4llm chromadb sentence-transformers ollama rank-bm25 transformers torch psycopg2-binary pyyaml
-# pgvector需要额外安装postgresql+pgvector扩展
-# 运行Ollama需本地启动11434服务，提前pull bge-m3、nomic-embed-text、qwen:1.8b等模型
-
+from pathlib import Path
 from typing import List
 from llama_index.core import Document
-from registry.db_registry import register_all_vector_dbs
-from registry.embedding_registry import register_all_embeddings
-from embedding.config import EmbeddingConfig
-from vector_db.config import VectorStoreConfig
-from embedding.BaseEmbeddingService import BaseEmbeddingService
-from vector_db.base_vector_db import BaseVectorStore
-from retriever.base_retriever import DenseRetriever, SparseRetriever
-from retriever.bm25_index import BM25Index
-from retriever.hybrid_retriever import HybridRetriever
-from constructor.constructor import SectionReconstructor
-from source.ref_sources import LocalPDFDataSource
-from constructor.constructor import SectionReconstructor
-from spliter.spliter import MarkdownDocumentSplitter
-from summary import BaseSummarizer
-from registry.tokenizer_registry import register_all_tokenizers
-from tokenizer.base_tokenizer import BaseTokenizer
-from tokenizer.config import TokenizerConfig
-from registry.summary_registry import register_all_summarizers
-from summary.config import SummarizerConfig
-from registry.rerank_registry import register_all_rerankers
-from rerank.config import RerankerConfig
+from .registry.db_registry import register_all_vector_dbs
+from .registry.embedding_registry import register_all_embeddings
+from .embedding.config import EmbeddingConfig
+from .vector_db.config import VectorStoreConfig
+from .embedding.BaseEmbeddingService import BaseEmbeddingService
+from .vector_db.base_vector_db import BaseVectorStore
+from .retriever.base_retriever import DenseRetriever, SparseRetriever
+from .retriever.bm25_index import BM25Index
+from .retriever.hybrid_retriever import HybridRetriever
+from .constructor.constructor import SectionReconstructor
+from .source.ref_sources import LocalPDFDataSource
+from .spliter.spliter import MarkdownDocumentSplitter
+from .summary import BaseSummarizer
+from .registry.tokenizer_registry import register_all_tokenizers
+from .tokenizer.base_tokenizer import BaseTokenizer
+from .tokenizer.config import TokenizerConfig
+from .registry.summary_registry import register_all_summarizers
+from .summary.config import SummarizerConfig
+from .registry.rerank_registry import register_all_rerankers
+from .rerank.config import RerankerConfig
+
+KNOWLEDGES_DIR = Path(__file__).resolve().parent.parent / "knowledges"
 
 # 1. 全局单例容器
 class RAGContainer:
@@ -85,8 +83,21 @@ class RAGContainer:
             chunk_overlap=0
         )
 
+        # 首次启动自动建立随项目发布的知识库，已有持久化数据时不重复写入。
+        if self.vector_store.count() == 0:
+            self.load_pdf_knowledge()
+        else:
+            # Chroma 持久化了向量，但 BM25 是内存索引，重启后必须恢复。
+            docs = LocalPDFDataSource(KNOWLEDGES_DIR).load_documents()
+            bm25_nodes = []
+            for doc in docs:
+                bm25_nodes.extend(self.splitter.split([doc]))
+            self.bm25_index.build(bm25_nodes)
+
     # 增量更新场景会丢失历史文档,需要增量逻辑
-    def load_pdf_knowledge(self, folder_path: str = "./knowledges") -> List[str]:
+    def load_pdf_knowledge(self, folder_path: str = None) -> List[str]:
+        if folder_path is None:
+            folder_path = KNOWLEDGES_DIR
         pdf_ds = LocalPDFDataSource(folder_path=folder_path)
         docs: List[Document] = pdf_ds.load_documents()
         all_nodes = []
