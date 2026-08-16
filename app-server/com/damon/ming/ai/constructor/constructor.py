@@ -1,7 +1,7 @@
 # app-server/com/damon/ming/ai/constructor/constructor.py
 from typing import List, Optional
 from llama_index.core.schema import TextNode
-from tokenizer.base_tokenizer import BaseTokenizer
+from ..tokenizer.base_tokenizer import BaseTokenizer
 
 class SectionReconstructor:
     def __init__(self, tokenizer: BaseTokenizer):
