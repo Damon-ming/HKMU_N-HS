@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { ChatRoomMessage, ChatRoomRequest } from "../types";
 import { sendChatRoomMessage, streamChatRoomMessage } from "../api";
-import type { ChatRoomMessage, ChatRoomRequest } from "../types";
 
 export function chatMessageHook() {
   const [input, setInput] = useState("");
@@ -15,11 +15,11 @@ export function chatMessageHook() {
     const userMsgId = `user-${Date.now()}`;
     const assistantMsgId = `assistant-${Date.now()}`;
 
-    // 预先插入消息，AI气泡初始显示加载文案
+    // 预先插入消息，补充role
     setMessages((items) => [
       ...items,
-      { id: userMsgId, text: query },
-      { id: assistantMsgId, text: "正在思考中..." },
+      { id: userMsgId, text: query, role: "user" },
+      { id: assistantMsgId, text: "正在思考中...", role: "assistant" },
     ]);
     setInput("");
     setSending(true);
@@ -62,16 +62,16 @@ export function chatMessageHook() {
     const userMsgId = `user-${Date.now()}`;
     const assistantMsgId = `assistant-${Date.now()}`;
 
-    // AI气泡初始展示加载提示「正在思考中...」
     setMessages((items) => [
       ...items,
-      { id: userMsgId, text: query },
-      { id: assistantMsgId, text: "正在思考中..." },
+      { id: userMsgId, text: query, role: "user" },
+      { id: assistantMsgId, text: "正在思考中...", role: "assistant" },
     ]);
     setInput("");
     setSending(true);
 
     let firstChunk = true;
+    let streamFinished = false;
 
     try {
       const req: ChatRoomRequest = {
@@ -86,20 +86,19 @@ export function chatMessageHook() {
           setMessages((prev) =>
             prev.map((msg) => {
               if (msg.id === assistantMsgId) {
-                // 第一条分片到来：直接丢弃加载文字，使用第一段内容
                 if (firstChunk) {
                   firstChunk = false;
                   return { ...msg, text: delta };
                 }
-                // 后续分片：持续追加
                 return { ...msg, text: msg.text + delta };
               }
               return msg;
             })
           );
         } else if (payload.event === "done") {
-          setSending(false);
+          streamFinished = true;
         } else if (payload.event === "error") {
+          streamFinished = true;
           const errData = payload.data as { error_msg: string };
           setMessages((prev) =>
             prev.map((msg) =>
@@ -108,11 +107,9 @@ export function chatMessageHook() {
                 : msg
             )
           );
-          setSending(false);
         }
       });
     } catch (e) {
-      // 网络异常、接口请求失败统一捕获
       const errMsg = e instanceof Error ? e.message : "消息发送失败，请稍后重试";
       setMessages((prev) =>
         prev.map((msg) =>
@@ -122,7 +119,10 @@ export function chatMessageHook() {
         )
       );
     } finally {
-      setSending(false);
+      // 只有流没有正常结束才在这里修改状态
+      if (!streamFinished) {
+        setSending(false);
+      }
     }
   };
 

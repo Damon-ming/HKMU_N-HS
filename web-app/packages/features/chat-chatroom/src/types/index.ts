@@ -4,6 +4,7 @@ import type { BaseRequest, BizApiResponse } from "@ming/biz-common-net-api";
 export interface ChatRoomMessage {
   id: string;
   text: string;
+  role: "user" | "assistant";
 }
 
 export interface ChatRoomRequest extends BaseRequest {
@@ -15,7 +16,7 @@ export interface ChatRoomSyncData {
   answer_content: string;
   thinking_process?: string;
 }
-export type ChatRoomApiResponse = BizApiResponse<ChatRoomSyncData>;
+export type ChatRoomApiResponse = BizApiResponse;
 
 export type SseEvent = "delta" | "done" | "error";
 

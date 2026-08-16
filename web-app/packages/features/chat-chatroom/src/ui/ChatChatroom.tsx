@@ -1,37 +1,26 @@
 import React, { useRef, useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { chatMessageHook } from "../hook";
 
 export interface ChatChatroomProps {}
 export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
-  const {
-    input,
-    setInput,
-    sending,
-    messages,
-    sendStream,
-  } = chatMessageHook();
+  const { input, setInput, sending, messages, sendStream } = chatMessageHook();
   const send = sendStream;
 
-  // 消息列表容器ref
   const messageContainerRef = useRef<HTMLDivElement>(null);
-  // 判断用户是否手动向上滚动，离开底部
   const [isUserScrollUp, setIsUserScrollUp] = useState(false);
 
-  // 监听滚动事件：判断用户是否停留在底部
   const handleScroll = () => {
     const container = messageContainerRef.current;
     if (!container) return;
     const { scrollTop, scrollHeight, clientHeight } = container;
-    // 距离底部小于10px，视为在底部
     const isAtBottom = scrollHeight - scrollTop - clientHeight < 10;
     setIsUserScrollUp(!isAtBottom);
   };
 
-  // messages 发生变化时自动滚动到底部
   useEffect(() => {
     const container = messageContainerRef.current;
     if (!container || isUserScrollUp) return;
-    // 滚动到最底部
     container.scrollTop = container.scrollHeight;
   }, [messages, isUserScrollUp]);
 
@@ -40,18 +29,33 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
       className={`feature-chatroom ${messages.length ? "has-messages" : "is-empty"}`}
     >
       {messages.length > 0 && (
-        // 绑定ref + 滚动监听
         <section
           ref={messageContainerRef}
-          className="feature-messages"
+          className="feature-messages flex flex-col gap-8"
           onScroll={handleScroll}
           style={{ overflowY: "auto", flex: 1 }}
         >
-          {messages.map((message, index) => {
-            const senderType = index % 2 === 0 ? "user" : "assistant";
+          {messages.map((message) => {
             return (
-              <div className={`feature-message ${senderType}`} key={message.id}>
-                {message.text}
+              <div
+                key={message.id}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                {/* 气泡容器，强制换行兜底 */}
+                <div
+                  className={`feature-message ${message.role}`}
+                  style={{
+                    maxWidth: message.role === "user" ? "50%" : "100%",
+                    wordBreak: "break-all",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  {message.role === "assistant" ? (
+                    <ReactMarkdown>{message.text}</ReactMarkdown>
+                  ) : (
+                    <span className="whitespace-pre-wrap">{message.text}</span>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -67,6 +71,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
         )}
         <footer className="feature-composer">
           <textarea
+            className="w-full resize-y overflow-auto whitespace-pre-wrap"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -82,8 +87,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
             onClick={() => void send()}
             aria-label="发送消息"
             disabled={sending}
-          >
-          </button>
+          ></button>
         </footer>
       </section>
     </main>

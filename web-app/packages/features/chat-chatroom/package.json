@@ -8,7 +8,8 @@
   "dependencies": {
     "@ming/features-upload-api": "workspace:*",
     "@ming/data-layer": "workspace:*",
-    "@ming/biz-common-net-api": "workspace:*"
+    "@ming/biz-common-net-api": "workspace:*",
+    "react-markdown": "^9.0.1"
   },
   "peerDependencies": {
     "react": "^18.2.0"
