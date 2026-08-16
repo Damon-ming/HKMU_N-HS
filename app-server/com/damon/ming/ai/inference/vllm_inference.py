@@ -71,7 +71,6 @@ class VLLMInference(BaseInferenceService):
         if response_schema is not None:
             fallback_dict = {
                 "answer_content": f"系统调用失败: {err_msg}",
-                "used_chunk_ids": []
             }
             if think_flag:
                 fallback_dict["thinking_process"] = ""
