@@ -1,10 +1,10 @@
 # app-server/com/damon/ming/ai/retriever/hybrid_retriever.py
 from typing import List, Optional, Dict, Any
 from llama_index.core.schema import TextNode
-from monitor.log import pin
+from ..monitor.log import pin
 
-from base_retriever import DenseRetriever, SparseRetriever
-from rrf import ReciprocalRankFusion
+from .base_retriever import DenseRetriever, SparseRetriever
+from .rrf import ReciprocalRankFusion
 
 class HybridRetriever:
     """

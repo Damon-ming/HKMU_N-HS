@@ -1,3 +1,12 @@
+import os
+import sys
+
+# 支持从 app-server 目录直接执行 `python com/damon/ming/main.py` 或
+# `uvicorn main:app`，无需额外设置 PYTHONPATH。
+_APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _APP_ROOT not in sys.path:
+    sys.path.insert(0, _APP_ROOT)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn

@@ -1,11 +1,11 @@
-import os
+# app-server/com/damon/ming/upload/service/upload_service.py
 from pathlib import Path
 import uuid
 from fastapi import UploadFile
 from typing import List
 from upload.schemas.bean import FileUploadRequest
 
-UPLOAD_DIR = Path(__file__).resolve().parents[4] / "knowledges"
+UPLOAD_DIR = Path(__file__).resolve().parents[2] / "knowledges"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 class UploadService:

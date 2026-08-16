@@ -1,3 +1,14 @@
+llama-index
+tiktoken
+pymupdf4llm
+chromadb
+sentence-transformers
+ollama
+rank-bm25
+transformers
+torch
+psycopg2-binary
+pyyaml
 fastapi
 uvicorn
 python-multipart

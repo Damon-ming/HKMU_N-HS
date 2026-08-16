@@ -1,7 +1,7 @@
 # app-server/com/damon/ming/ai/retriever/bm25_index.py
 from typing import List
 from llama_index.core.schema import TextNode
-from monitor.log import pin
+from ..monitor.log import pin
 
 class BM25Index:
     """
@@ -22,6 +22,10 @@ class BM25Index:
         """构建 BM25 内存索引"""
         from rank_bm25 import BM25Okapi
         self.corpus = nodes
+        if not nodes:
+            self.index = None
+            self.logger.warning("[BM25Index] 没有可建立索引的文档")
+            return
         tokenized_corpus = [self.tokenizer(node.text) for node in nodes]
         self.index = BM25Okapi(tokenized_corpus)
         self.logger.info(f"[BM25Index] 索引构建完成 | 文档数: {len(nodes)}")
