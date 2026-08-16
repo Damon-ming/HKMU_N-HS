@@ -2,8 +2,8 @@
 import os
 import yaml
 from typing import Optional
-from factory import VectorStoreFactory
-from base_vector_db import BaseVectorStore
+from .factory import VectorStoreFactory
+from .base_vector_db import BaseVectorStore
 
 class VectorStoreConfig:
     """向量存储配置加载"""

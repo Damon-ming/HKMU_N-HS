@@ -4,9 +4,9 @@ import uuid
 import json
 
 from llama_index.core.schema import TextNode
-from monitor.log import pin
+from ..monitor.log import pin
 
-from vector_db.base_vector_db import BaseVectorStore
+from .base_vector_db import BaseVectorStore
 
 class PGVectorStore(BaseVectorStore):
     """

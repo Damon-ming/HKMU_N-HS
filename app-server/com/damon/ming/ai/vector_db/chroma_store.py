@@ -1,11 +1,14 @@
 # app-server/com/damon/ming/ai/vector_db/chroma_store.py
+from pathlib import Path
 from typing import List, Optional, Dict, Any
 import uuid
 
 from llama_index.core.schema import TextNode
-from monitor.log import pin
+from ..monitor.log import pin
 
-from vector_db import BaseVectorStore
+from .base_vector_db import BaseVectorStore
+
+DEFAULT_PERSIST_DIR = str(Path(__file__).resolve().parent / "chroma_data")
 
 class ChromaDBStore(BaseVectorStore):
     """
@@ -17,7 +20,7 @@ class ChromaDBStore(BaseVectorStore):
     def __init__(
         self,
         collection_name: str = "rag_collection",
-        persist_directory: str = "./chroma_data",
+        persist_directory: str = DEFAULT_PERSIST_DIR,
         host: Optional[str] = None,
         port: Optional[int] = None,
         embedding_dimension: int = 1024,
@@ -134,14 +137,14 @@ class ChromaDBStore(BaseVectorStore):
         """向量相似度检索"""
         try:
             # 构建 where 条件
-            where = metadata_filter if metadata_filter else {}
-            
-            results = self.collection.query(
-                query_embeddings=[query_vector],
-                n_results=k,
-                where=where,
-                include=["documents", "metadatas", "distances"]
-            )
+            query_kwargs = {
+                "query_embeddings": [query_vector],
+                "n_results": k,
+                "include": ["documents", "metadatas", "distances"]
+            }
+            if metadata_filter:
+                query_kwargs["where"] = metadata_filter
+            results = self.collection.query(**query_kwargs)
             
             if not results['ids'] or not results['ids'][0]:
                 return []
