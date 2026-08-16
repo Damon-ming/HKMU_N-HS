@@ -43,7 +43,8 @@ env/
 *.egg
 
 # 业务上传文件目录（后端存放知识库文件，禁止提交）
-HKMU_N_and_HS/com/damon/ming/knowledges/
+HKMU_N_and_HS/app-server/com/damon/ming/knowledges/
+HKMU_N_and_HS/app-server/chroma_data
 
 # ========== 全局杂项 ==========
 # pnpm本地缓存
