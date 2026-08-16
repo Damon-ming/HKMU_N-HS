@@ -16,12 +16,11 @@ from vector_db.base_vector_db import BaseVectorStore
 from retriever.base_retriever import DenseRetriever, SparseRetriever
 from retriever.bm25_index import BM25Index
 from retriever.hybrid_retriever import HybridRetriever
-from rerank.factory import RerankerFactory
 from constructor.constructor import SectionReconstructor
 from source.ref_sources import LocalPDFDataSource
 from constructor.constructor import SectionReconstructor
 from spliter.spliter import MarkdownDocumentSplitter
-from summary import SummarizerFactory, BaseSummarizer
+from summary import BaseSummarizer
 from registry.tokenizer_registry import register_all_tokenizers
 from tokenizer.base_tokenizer import BaseTokenizer
 from tokenizer.config import TokenizerConfig
@@ -80,7 +79,7 @@ class RAGContainer:
             sparse_retriever=self.sparse_retriever,
             dense_weight=0.6,
             sparse_weight=0.4,
-            fuse_k=60
+            fuse_k=40
         )
 
         # 文本切块器，补充缺失的分块逻辑
@@ -113,50 +112,74 @@ class RAGContainer:
         return node_ids
 
     async def query_rag(self, query: str, top_k: int = 5, max_context_tokens: int = 4096):
+        # 1. 混合稠密+稀疏召回
         raw_nodes = self.hybrid_retriever.retrieve(
             query=query,
             top_k=top_k,
-            dense_top_k=50,
-            sparse_top_k=50
+            dense_top_k=30,
+            sparse_top_k=30
         )
         if not raw_nodes:
             return ""
+
+        # 2. CrossEncoder 重排过滤低相关文档
         rerank_nodes = self.reranker.rerank(query=query, nodes=raw_nodes, top_k=top_k)
 
-        # 1. 批量拉取全部完整章节
+        # 收集所有唯一 (file_md5, section_id) 章节对
         section_keys = set()
         for node in rerank_nodes:
-            md5 = node.metadata.get("file_md5")
-            sid = node.metadata.get("section_id")
-            if md5 and sid:
-                section_keys.add((md5, sid))
+            file_md5 = node.metadata.get("file_md5")
+            section_id = node.metadata.get("section_id")
+            if file_md5 and section_id:
+                section_keys.add((file_md5, section_id))
 
         full_context_parts = []
-        # 单章节超长阈值：超过该值则摘要压缩
-        single_section_token_threshold = 1500
+        single_section_token_threshold = 1000
+        final_context = ""  # 提前初始化，防止无章节时变量不存在
 
-        for file_md5, section_id in section_keys:
-            filter_condition = {"file_md5": file_md5, "section_id": section_id}
-            section_nodes = self.vector_store.get_by_metadata(metadata_filter=filter_condition)
-            full_section = self.section_recon._merge_chunks(section_nodes)
-            if not full_section:
-                continue
-            
-            # 统计章节token
-            token_cnt = len(self.section_recon.tokenizer.encode(full_section))
-            if token_cnt > single_section_token_threshold:
-                # 超长：调用轻量小模型生成摘要替代原文
-                compressed_text = self.summarizer.summarize(
-                    text=full_section,
-                    max_summary_tokens=800
-                )
-                full_context_parts.append(f"【长文档摘要】\n{compressed_text}")
-            else:
-                full_context_parts.append(full_section)
+        if section_keys:
+            # 批量构造 OR 查询条件，只访问一次向量库，替代循环多次IO
+            or_conditions = []
+            for file_md5, section_id in section_keys:
+                or_conditions.append({
+                    "$and": [
+                        {"file_md5": file_md5},
+                        {"section_id": section_id}
+                    ]
+                })
+            batch_filter = {"$or": or_conditions}
+            all_section_nodes = self.vector_store.get_by_metadata(metadata_filter=batch_filter)
 
-        full_text = "\n=====章节分割=====\n".join(full_context_parts)
-        # 全局兜底截断
-        final_context = self.section_recon.truncate_by_token(full_text, max_context_tokens)
+            # 按 (file_md5, section_id) 分组所有chunk分片
+            group_map = {}
+            for chunk in all_section_nodes:
+                key = (chunk.metadata["file_md5"], chunk.metadata["section_id"])
+                if key not in group_map:
+                    group_map[key] = []
+                group_map[key].append(chunk)
+
+            # 遍历每一个目标章节，合并完整文本/超长摘要
+            for key in section_keys:
+                section_nodes = group_map.get(key, [])
+                full_section = self.section_recon._merge_chunks(section_nodes)
+                if not full_section:
+                    continue
+
+                # 使用封装好的 count_tokens，替代直接 encode
+                token_cnt = self.section_recon.tokenizer.count_tokens(full_section)
+                if token_cnt > single_section_token_threshold:
+                    # 超长章节生成摘要
+                    compressed_text = self.summarizer.summarize(text=full_section, max_summary_tokens=1200)
+                    full_context_parts.append(f"【长文档摘要】\n{compressed_text}")
+                else:
+                    full_context_parts.append(full_section)
+
+            # 全部章节收集完成后，统一拼接（移出循环，修复缩进bug）
+            # 使用短分隔符减少token占用，不引入无效资料
+            full_text = "\n---\n".join(full_context_parts)
+            # 全局token兜底截断
+            final_context = self.section_recon.truncate_by_token(full_text, max_context_tokens)
+
         return final_context
 
 # 全局单例，项目启动只初始化一次
