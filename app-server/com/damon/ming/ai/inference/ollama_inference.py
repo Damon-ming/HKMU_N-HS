@@ -2,8 +2,8 @@ import json
 import time
 import ollama
 from typing import List, Dict, Any, Optional, AsyncGenerator
-from monitor.log import pin
-from base_inference import BaseInferenceService
+from ..monitor.log import pin
+from .base_inference import BaseInferenceService
 
 logger = pin("OllamaInference")
 

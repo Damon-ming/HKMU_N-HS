@@ -4,8 +4,8 @@ import json
 import time
 from typing import List, Dict, Any, Optional, AsyncGenerator
 from openai import AsyncOpenAI
-from monitor.log import pin
-from base_inference import BaseInferenceService
+from ..monitor.log import pin
+from .base_inference import BaseInferenceService
 
 logger = pin("VLLMInference")
 

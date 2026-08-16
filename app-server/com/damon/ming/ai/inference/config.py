@@ -2,14 +2,14 @@
 import os
 import yaml
 from typing import Optional
-from factory import InferenceFactory
-from base_inference import BaseInferenceService
+from .factory import InferenceFactory
+from .base_inference import BaseInferenceService
 
 import os
 import yaml
 from typing import Optional
-from factory import InferenceFactory
-from base_inference import BaseInferenceService
+from .factory import InferenceFactory
+from .base_inference import BaseInferenceService
 
 class InferenceConfig:
     def __init__(self, config_path: Optional[str] = None):
