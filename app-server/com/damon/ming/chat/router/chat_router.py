@@ -6,6 +6,8 @@ from ai.registry.inference_registry import register_all_inferences
 from ai.inference.config import InferenceConfig
 from ai.inference.base_inference import BaseInferenceService
 from ai.schemas.response import BaseLLMSuccessResponse
+from ai.schemas.inference_params import get_chat_schema
+import json
 
 router = APIRouter(prefix="/v1/llm", tags=["聊天模块"])
 
@@ -24,8 +26,9 @@ SYSTEM_PROMPT_TPL = """
 1. 只能使用【参考知识库】内存在的内容回答用户问题；
 2. 如果参考知识库为空、或者没有和用户问题相关的内容，直接只输出：不知道；
 3. 禁止使用你自身内置常识、禁止脑补、禁止推测、禁止编造任何原文不存在的信息；
-4. 回答精简，只输出答案，不要多余解释、不要分析、不要思考过程；
-5. 不允许输出无关内容，严格遵守知识库边界。
+4. 回答使用标准Markdown格式输出，存在多条内容用有序/无序列表，重点内容加粗，表格原样保留；
+5. 回答精简，不要多余解释、不要分析、不要思考过程；
+6. 不允许输出无关内容，严格遵守知识库边界。
 
 【参考知识库】
 {ref_content}
@@ -36,6 +39,8 @@ async def chat(request: ChatRequest):
     # 1. 调用RAG检索，获取拼接完整章节上下文
     ref_content = await rag_app.query_rag(request.query)
 
+    schema = get_chat_schema(request.think)
+    
     # 2. 填充固定Prompt，构造标准messages数组
     system_prompt = SYSTEM_PROMPT_TPL.format(
         ref_content=ref_content
@@ -46,18 +51,15 @@ async def chat(request: ChatRequest):
     ]
 
     # 3. 调用推理服务生成回答
-    answer = await infer_service.text_generation(
+    llm_raw = await infer_service.text_generation(
         model_name=llm_model_name,
-        messages=prompt_messages
+        messages=prompt_messages,
+        think_flag=request.think,
+        response_schema=schema
     )
 
     # 4. 组装返回结构体，think控制是否携带思考过程（当前固定空）
-    resp_data = {
-        "thinking_process": "" if not request.think else "无推理过程",
-        "answer_content": answer
-    }
+    resp_inner = json.loads(llm_raw)
 
-    return BaseLLMSuccessResponse(
-        bizCode=100000,
-        data=resp_data
-    )
+    # 外层统一返回
+    return BaseLLMSuccessResponse(bizCode=100000, data=resp_inner)
