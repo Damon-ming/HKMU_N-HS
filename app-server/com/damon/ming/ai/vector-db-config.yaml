@@ -1,3 +1,4 @@
+# app-server/com/damon/ming/ai/vector-db-config.yaml
 vector_store:
   # 默认使用 ChromaDB（本地）
   default:

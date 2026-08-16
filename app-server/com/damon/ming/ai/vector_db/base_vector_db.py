@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/vector_store/BaseVectorStore.py
+# app-server/com/damon/ming/ai/vector_db/base_vector_db.py
 
 from abc import ABC, abstractmethod
 from typing import List, Optional, Dict, Any

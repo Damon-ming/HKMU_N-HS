@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/vector_store/factory.py
+# app-server/com/damon/ming/ai/vector_db/factory.py
 from typing import Dict, Type
 from monitor.log import pin
 

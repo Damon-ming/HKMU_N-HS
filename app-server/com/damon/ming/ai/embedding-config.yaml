@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/ai-config.yaml
+# app-server/com/damon/ming/ai/embedding-config.yaml
 embedding:
   # 主用：Ollama nomic-embed-text
   default:

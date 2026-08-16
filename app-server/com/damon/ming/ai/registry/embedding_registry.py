@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/registry.py
+# aapp-server/com/damon/ming/ai/registry/embedding_registry.py
 from embedding.factory import EmbeddingFactory
 from embedding.ollama import OllamaEmbedding
 from embedding.huggingface import HuggingFaceEmbedding

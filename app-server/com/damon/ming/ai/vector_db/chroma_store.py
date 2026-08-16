@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/vector_store/chroma_store.py
+# app-server/com/damon/ming/ai/vector_db/chroma_store.py
 from typing import List, Optional, Dict, Any
 import uuid
 

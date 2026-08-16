@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/vector_store/pgvector_store.py
+# app-server/com/damon/ming/ai/vector_db/pgvector_store.py
 from typing import List, Optional, Dict, Any
 import uuid
 import json

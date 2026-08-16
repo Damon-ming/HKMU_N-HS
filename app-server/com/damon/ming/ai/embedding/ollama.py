@@ -1,5 +1,5 @@
 # app-server/com/damon/ming/ai/embedding/ollama.py
-from typing import List, Optional
+from typing import List
 import time
 import hashlib
 
