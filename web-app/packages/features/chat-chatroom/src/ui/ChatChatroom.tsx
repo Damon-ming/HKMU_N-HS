@@ -57,7 +57,6 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
             aria-label="发送消息"
             disabled={sending}
           >
-            发送
           </button>
         </footer>
       </section>
