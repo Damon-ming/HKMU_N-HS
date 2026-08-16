@@ -2,7 +2,7 @@
 import time
 import hashlib
 from typing import Dict
-from monitor.log import pin
+from ..monitor.log import pin
 from .base_summarizer import BaseSummarizer
 
 logger = pin("TinyLLMSummarizer")

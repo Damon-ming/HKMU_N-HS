@@ -1,6 +1,6 @@
 # app-server/com/damon/ming/ai/summary/summarizer_factory.py
 from typing import Dict, Type
-from monitor.log import pin
+from ..monitor.log import pin
 from .base_summarizer import BaseSummarizer
 from .tiny_llm_summarizer import TinyLLMSummarizer
 
@@ -20,5 +20,9 @@ class SummarizerFactory:
         if provider not in cls._registry:
             raise ValueError(f"不支持的摘要模型，可用列表：{list(cls._registry.keys())}")
         return cls._registry[provider](**kwargs)
+
+    @classmethod
+    def list_providers(cls) -> list:
+        return list(cls._registry.keys())
 
 SummarizerFactory.register("tiny_ollama", TinyLLMSummarizer)
