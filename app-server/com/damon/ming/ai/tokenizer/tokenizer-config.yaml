@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/tokenizer/tokenizer_config.yaml
+# app-server/com/damon/ming/ai/tokenizer/tokenizer-config.yaml
 tokenizer:
   default:
     provider: tiktoken

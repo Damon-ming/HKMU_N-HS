@@ -1,6 +1,6 @@
 # app-server/com/damon/ming/ai/tokenizer/tokenizer_factory.py
 from typing import Dict, Type
-from monitor.log import pin
+from ..monitor.log import pin
 from .base_tokenizer import BaseTokenizer
 from .tiktoken_tokenizer import TiktokenTokenizer
 
