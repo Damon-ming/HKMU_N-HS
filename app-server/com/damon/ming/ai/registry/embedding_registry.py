@@ -1,8 +1,8 @@
 # app-server/com/damon/ming/ai/registry/embedding_registry.py
-from embedding.factory import EmbeddingFactory
-from embedding.ollama import OllamaEmbedding
-from embedding.huggingface import HuggingFaceEmbedding
-from monitor.log import pin
+from ..embedding.factory import EmbeddingFactory
+from ..embedding.ollama import OllamaEmbedding
+from ..embedding.huggingface import HuggingFaceEmbedding
+from ..monitor.log import pin
 
 logger = pin("Registry")
 

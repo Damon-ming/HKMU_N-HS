@@ -1,7 +1,7 @@
 # app-server/com/damon/ming/ai/registry/rerank_registry.py
-from rerank.factory import RerankerFactory
-from rerank.cross_encoder_reranker import CrossEncoderReranker
-from monitor.log import pin
+from ..rerank.factory import RerankerFactory
+from ..rerank.cross_encoder_reranker import CrossEncoderReranker
+from ..monitor.log import pin
 
 logger = pin("RerankRegistry")
 

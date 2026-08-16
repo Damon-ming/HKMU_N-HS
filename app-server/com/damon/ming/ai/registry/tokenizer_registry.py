@@ -1,7 +1,7 @@
 # app-server/com/damon/ming/ai/registry/tokenizer_registry.py
-from tokenizer.tokenizer_factory import TokenizerFactory
-from tokenizer.tiktoken_tokenizer import TiktokenTokenizer
-from monitor.log import pin
+from ..tokenizer.tokenizer_factory import TokenizerFactory
+from ..tokenizer.tiktoken_tokenizer import TiktokenTokenizer
+from ..monitor.log import pin
 
 logger = pin("TokenizerRegistry")
 

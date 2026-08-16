@@ -1,8 +1,8 @@
 # app-server/com/damon/ming/ai/registry/db_registry.py
-from vector_db.factory import VectorStoreFactory
-from vector_db.chroma_store import ChromaDBStore
-from vector_db.pgvector_store import PGVectorStore
-from monitor.log import pin
+from ..vector_db.factory import VectorStoreFactory
+from ..vector_db.chroma_store import ChromaDBStore
+from ..vector_db.pgvector_store import PGVectorStore
+from ..monitor.log import pin
 
 logger = pin("db_registry")
 
