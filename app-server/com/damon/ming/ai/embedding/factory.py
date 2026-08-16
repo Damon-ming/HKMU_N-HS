@@ -1,11 +1,11 @@
 # app-server/com/damon/ming/ai/embedding/factory.py
 from typing import List
 
-from monitor.log import pin
-from BaseEmbeddingService import BaseEmbeddingService
+from ..monitor.log import pin
+from .BaseEmbeddingService import BaseEmbeddingService
 
-from ollama import OllamaEmbedding
-from huggingface import HuggingFaceEmbedding
+from .ollama import OllamaEmbedding
+from .huggingface import HuggingFaceEmbedding
 
 logger = pin("EmbeddingFactory")
 

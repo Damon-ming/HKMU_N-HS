@@ -3,7 +3,7 @@
 import os
 import yaml
 from typing import Optional
-from embedding.BaseEmbeddingService import BaseEmbeddingService
+from .BaseEmbeddingService import BaseEmbeddingService
 
 class EmbeddingConfig:
     """从配置文件加载 embedding 配置"""
@@ -28,7 +28,7 @@ class EmbeddingConfig:
     
     def create_embedder(self, profile: str = "default") -> BaseEmbeddingService:
         """根据配置创建 embedder"""
-        from factory import EmbeddingFactory  # 延迟导入避免循环依赖
+        from .factory import EmbeddingFactory  # 延迟导入避免循环依赖
         
         config = self.config.get(profile)
         if not config:

@@ -1,8 +1,8 @@
 # app-server/com/damon/ming/ai/embedding/huggingface.py
 from typing import List, Optional
 
-from monitor.log import pin
-from BaseEmbeddingService import BaseEmbeddingService
+from ..monitor.log import pin
+from .BaseEmbeddingService import BaseEmbeddingService
 
 class HuggingFaceEmbedding(BaseEmbeddingService):
     """
