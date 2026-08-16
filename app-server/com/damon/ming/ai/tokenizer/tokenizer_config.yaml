@@ -1,0 +1,8 @@
+# app-server/com/damon/ming/ai/tokenizer/tokenizer_config.yaml
+tokenizer:
+  default:
+    provider: tiktoken
+    encoding_name: cl100k_base
+  backup:
+    provider: tiktoken
+    encoding_name: p50k_base

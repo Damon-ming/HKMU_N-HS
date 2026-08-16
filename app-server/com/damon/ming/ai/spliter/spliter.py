@@ -6,8 +6,8 @@ from typing import List, Optional
 from llama_index.core import Document
 from llama_index.core.node_parser import MarkdownNodeParser, SentenceSplitter, TokenTextSplitter
 from llama_index.core.schema import TextNode
-import tiktoken
 from monitor.log import pin
+from tokenizer.base_tokenizer import BaseTokenizer
 
 class BaseDocumentSplitter(ABC):
     """文档分割器抽象接口"""
@@ -17,16 +17,28 @@ class BaseDocumentSplitter(ABC):
 
 class MarkdownDocumentSplitter(BaseDocumentSplitter):
 
-    def __init__(self, max_chunk_token_size: int = 1024, chunk_overlap: int = 120, tokenizer_model: str = "cl100k_base"):
+# 构造函数接收Tokenizer实例，不再传编码名字符串
+    def __init__(
+        self,
+        tokenizer: BaseTokenizer,
+        max_chunk_token_size: int = 1024,
+        chunk_overlap: int = 120
+    ):
         self.max_chunk_token_size = max_chunk_token_size
         self.chunk_overlap = chunk_overlap
-        self.tokenizer = tiktoken.get_encoding(tokenizer_model)
+        self.tokenizer = tokenizer
         self.logger = pin("MarkdownDocumentSplitter")
         self.md_parser = MarkdownNodeParser()
         self.token_splitter = TokenTextSplitter(
             chunk_size=max_chunk_token_size,
             chunk_overlap=chunk_overlap
         )
+        self.stats = {
+            "total_chunks": 0,
+            "total_sections": 0,
+            "split_sections": 0,
+            "errors": 0
+        }
 
         # 统计信息
         self.stats = {
@@ -37,13 +49,13 @@ class MarkdownDocumentSplitter(BaseDocumentSplitter):
         }
 
     def _gen_section_id(self, file_md5: str, node_text: str):
-        # 基于文件+原始章节文本生成稳定章节ID
         seg_hash = hashlib.md5(node_text.encode("utf-8")).hexdigest()[:16]
         return f"section_{file_md5}_{seg_hash}"
     
+    # 统一使用tokenizer接口统计，不再直接调用tiktoken
     def _count_tokens(self, text: str) -> int:
         try:
-            return len(self.tokenizer.encode(text))
+            return self.tokenizer.count_tokens(text)
         except Exception:
             return len(text)
 

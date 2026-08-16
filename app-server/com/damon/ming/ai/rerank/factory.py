@@ -1,4 +1,4 @@
-# app-server/com/damon/ming/ai/reranker/factory.py
+# app-server/com/damon/ming/ai/rerank/factory.py
 from typing import Dict, Type
 from monitor.log import pin
 from .base_reranker import BaseReranker

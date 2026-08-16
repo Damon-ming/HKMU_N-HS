@@ -1,0 +1,15 @@
+# app-server/com/damon/ming/ai/rerank/rerank-config.yaml
+reranker:
+  default:
+    rerank_type: cross_encoder
+    model_name: BAAI/bge-reranker-v2-m3
+    batch_size: 16
+    max_seq_len: 512
+    device: null
+
+  fallback:
+    rerank_type: cross_encoder
+    model_name: BAAI/bge-reranker-base
+    batch_size: 8
+    max_seq_len: 512
+    device: cpu

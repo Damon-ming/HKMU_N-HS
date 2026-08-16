@@ -11,7 +11,7 @@ class VectorStoreConfig:
     def __init__(self, config_path: Optional[str] = None):
         if config_path is None:
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            config_path = os.path.join(base_dir, "..", "vector-db-config.yaml")
+            config_path = os.path.join(base_dir, "vector-db-config.yaml")
         
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"配置文件不存在: {config_path}")

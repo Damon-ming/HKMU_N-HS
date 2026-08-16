@@ -3,7 +3,7 @@
 import os
 import yaml
 from typing import Optional
-from BaseEmbeddingService import BaseEmbeddingService
+from embedding.BaseEmbeddingService import BaseEmbeddingService
 
 class EmbeddingConfig:
     """从配置文件加载 embedding 配置"""
@@ -12,7 +12,7 @@ class EmbeddingConfig:
         if config_path is None:
             # 自动查找配置文件
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            config_path = os.path.join(base_dir, "..", "embeddind-config.yaml")
+            config_path = os.path.join(base_dir, "embedding-config.yaml")
         
         if not os.path.exists(config_path):
             raise FileNotFoundError(f"配置文件不存在: {config_path}")
