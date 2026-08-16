@@ -18,9 +18,26 @@ class BaseLLMFailedResponse(BaseModel, Generic[F]):
 
 # ================= 2. 业务数据基类 =================
 class BaseLLMSuccessData(BaseModel):
-    ...
+    pass
 
 class BaseLLMFailedData(BaseModel):
     """全局失败业务数据基类：可放全局通用的错误附加信息"""
     error_msg: str = Field(..., description="全局错误描述")
     error_code: Optional[str] = Field(None, description="内部错误追踪码")
+    
+    
+StreamDataT = TypeVar("StreamDataT")
+class StreamMessage(BaseModel, Generic[StreamDataT]):
+    """SSE单条消息基础封装"""
+    bizCode: int
+    event: str = Field(description="delta / done / error")
+    data: Optional[StreamDataT] = None
+
+# 增量分片数据模型
+class ChatDeltaData(BaseModel):
+    answer_content: str = ""
+    thinking_process: str = ""
+
+# 空结束数据
+class ChatDoneData(BaseModel):
+    pass

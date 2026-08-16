@@ -5,11 +5,12 @@ from ai.rag_tool import RAGContainer
 from ai.registry.inference_registry import register_all_inferences
 from ai.inference.config import InferenceConfig
 from ai.inference.base_inference import BaseInferenceService
-from ai.schemas.response import BaseLLMSuccessResponse
+from ai.schemas.response import BaseLLMFailedData, BaseLLMSuccessResponse, ChatDeltaData, ChatDoneData, StreamMessage
 from ai.schemas.inference_params import get_chat_schema
 import json
+from sse_starlette.sse import EventSourceResponse
 
-router = APIRouter(prefix="/v1/llm", tags=["聊天模块"])
+router = APIRouter(prefix="api/llm/v1", tags=["聊天模块"])
 
 # 全局单例初始化
 rag_app = RAGContainer()
@@ -34,7 +35,7 @@ SYSTEM_PROMPT_TPL = """
 {ref_content}
 """
 
-@router.post("/chat")
+@router.post("/send", response_class=BaseLLMSuccessResponse)
 async def chat(request: ChatRequest):
     # 1. 调用RAG检索，获取拼接完整章节上下文
     ref_content = await rag_app.query_rag(request.query)
@@ -63,3 +64,45 @@ async def chat(request: ChatRequest):
 
     # 外层统一返回
     return BaseLLMSuccessResponse(bizCode=100000, data=resp_inner)
+
+@router.post("/chat", response_class=EventSourceResponse)
+async def chat_stream(request: ChatRequest):
+    """流式问答接口，SSE流式输出"""
+    generator = stream_chat_generator(request)
+    return EventSourceResponse(generator)
+
+async def stream_chat_generator(request: ChatRequest):
+    try:
+        ref_content = await rag_app.query_rag(request.query)
+        system_prompt = SYSTEM_PROMPT_TPL.format(ref_content=ref_content)
+        prompt_messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": request.query}
+        ]
+
+        async for token in infer_service.stream_generate(
+            model_name=llm_model_name,
+            messages=prompt_messages
+        ):
+            delta_msg = StreamMessage[ChatDeltaData](
+                bizCode=100000,
+                event="delta",
+                data=ChatDeltaData(answer_content=token)
+            )
+            yield delta_msg.model_dump_json(ensure_ascii=False)
+
+        # 结束包
+        done_msg = StreamMessage[ChatDoneData](
+            bizCode=100000,
+            event="done",
+            data=ChatDoneData()
+        )
+        yield done_msg.model_dump_json(ensure_ascii=False)
+
+    except Exception as e:
+        err_msg = StreamMessage[BaseLLMFailedData](
+            bizCode=300001,
+            event="error",
+            data=BaseLLMFailedData(error_msg=str(e), error_code="STREAM_ERROR")
+        )
+        yield err_msg.model_dump_json(ensure_ascii=False)

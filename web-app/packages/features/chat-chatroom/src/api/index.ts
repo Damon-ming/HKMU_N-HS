@@ -1,1 +1,1 @@
-export { sendChatRoomMessage } from './chat-room.api'
+export { sendChatRoomMessage,streamChatRoomMessage } from './chat-room.api'

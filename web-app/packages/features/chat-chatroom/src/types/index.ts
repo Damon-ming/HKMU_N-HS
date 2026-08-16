@@ -1,20 +1,36 @@
-import type { BaseRequest, BizApiResponse } from "@ming/biz-common-net-api"
+import type { BaseRequest, BizApiResponse } from "@ming/biz-common-net-api";
 
+// 聊天消息渲染模型（页面展示用，和后端响应无关）
 export interface ChatRoomMessage {
-  id: string
-  text: string
-  sender: "user" | "assistant"
+  id: string;
+  text: string;
 }
 
 export interface ChatRoomRequest extends BaseRequest {
-  message: string
-  tempId: string
+  query: string;
+  think: boolean;
 }
 
-export interface ChatRoomResponse {
-  id: string
-  message: string
-  sender: "user" | "assistant"
-  timestamp: number
+export interface ChatRoomSyncData {
+  answer_content: string;
+  thinking_process?: string;
 }
-export type ChatRoomApiResponse = BizApiResponse<ChatRoomResponse>;
+export type ChatRoomApiResponse = BizApiResponse<ChatRoomSyncData>;
+
+export type SseEvent = "delta" | "done" | "error";
+
+export interface ChatDeltaData {
+  answer_content: string;
+  thinking_process?: string;
+}
+
+export interface ChatSseErrorData {
+  error_msg: string;
+  error_code?: string;
+}
+
+export interface ChatSseMessage {
+  bizCode: number;
+  event: SseEvent;
+  data: ChatDeltaData | ChatSseErrorData | Record<string, never>;
+}

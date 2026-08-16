@@ -8,24 +8,26 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
     setInput,
     sending,
     messages,
-    send,
+    sendStream, // 注意：你hook现在导出是 sendStream / sendNormal，不再是 send
     error: messageError,
   } = chatMessageHook();
   const error = messageError;
+
   return (
     <main
       className={`feature-chatroom ${messages.length ? "has-messages" : "is-empty"}`}
     >
       {messages.length > 0 && (
         <section className="feature-messages">
-          {messages.map((message) => (
-            <div
-              className={`feature-message ${message.sender}`}
-              key={message.id}
-            >
-              {message.text}
-            </div>
-          ))}
+          {messages.map((message, index) => {
+            // 偶数 = 用户消息，奇数 = AI消息
+            const senderType = index % 2 === 0 ? "user" : "assistant";
+            return (
+              <div className={`feature-message ${senderType}`} key={message.id}>
+                {message.text}
+              </div>
+            );
+          })}
         </section>
       )}
       <section className="feature-composer-area">
@@ -44,19 +46,18 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                send();
+                sendStream();
               }
             }}
-            placeholder={
-              "输入消息..."
-            }
+            placeholder={"输入消息..."}
             disabled={sending}
           />
           <button
-            onClick={() => void send()}
+            onClick={() => void sendStream()}
             aria-label="发送消息"
             disabled={sending}
           >
+            发送
           </button>
         </footer>
       </section>

@@ -12,3 +12,4 @@ pyyaml
 fastapi
 uvicorn
 python-multipart
+sse-starlette
