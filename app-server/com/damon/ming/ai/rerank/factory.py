@@ -1,6 +1,6 @@
 # app-server/com/damon/ming/ai/rerank/factory.py
 from typing import Dict, Type
-from monitor.log import pin
+from ..monitor.log import pin
 from .base_reranker import BaseReranker
 from .cross_encoder_reranker import CrossEncoderReranker
 
