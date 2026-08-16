@@ -4,6 +4,7 @@ from chat.schemas.bean import ChatRequest
 from ai.rag_tool import RAGContainer
 from ai.registry.inference_registry import register_all_inferences
 from ai.inference.config import InferenceConfig
+from ai.intent.intention_config import IntentionConfig
 from ai.inference.base_inference import BaseInferenceService
 from ai.schemas.response import BaseLLMFailedData, BaseLLMSuccessResponse, ChatDeltaData, ChatDoneData, StreamMessage
 from ai.schemas.inference_params import get_chat_schema
@@ -21,6 +22,14 @@ infer_config = InferenceConfig()
 infer_profile = "default"
 infer_service: BaseInferenceService = infer_config.create_infer_client(profile=infer_profile)
 llm_model_name = infer_config.get_llm_model_name(infer_profile)
+
+# todo 后期加上
+# 加载配置，创建意图识别器
+# intention_cfg = IntentionConfig()
+# classifier = intention_cfg.create_classifier("default")
+# intentions = ["chat_闲聊", "doc_query_知识库检索", "file_upload_上传文件"]
+# user_query = "帮我查一下项目方案内容"
+# res = classifier.classify(user_query, intention_list=intentions)
 
 SYSTEM_PROMPT_TPL = """
 你是严格基于知识库的问答助手，必须遵守以下硬性规则，绝对不能违反：

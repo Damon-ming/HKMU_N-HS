@@ -1,3 +1,5 @@
+# app-server/com/damon/ming/main.py
+# python com/damon/ming/main.py
 import os
 import sys
 from fastapi import FastAPI
