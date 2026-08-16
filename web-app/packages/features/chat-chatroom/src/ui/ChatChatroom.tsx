@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { chatMessageHook } from "../hook";
 
 export interface ChatChatroomProps {}
@@ -8,19 +8,46 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
     setInput,
     sending,
     messages,
-    sendStream, // 注意：你hook现在导出是 sendStream / sendNormal，不再是 send
-    error: messageError,
+    sendStream,
   } = chatMessageHook();
-  const error = messageError;
+  const send = sendStream;
+
+  // 消息列表容器ref
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+  // 判断用户是否手动向上滚动，离开底部
+  const [isUserScrollUp, setIsUserScrollUp] = useState(false);
+
+  // 监听滚动事件：判断用户是否停留在底部
+  const handleScroll = () => {
+    const container = messageContainerRef.current;
+    if (!container) return;
+    const { scrollTop, scrollHeight, clientHeight } = container;
+    // 距离底部小于10px，视为在底部
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 10;
+    setIsUserScrollUp(!isAtBottom);
+  };
+
+  // messages 发生变化时自动滚动到底部
+  useEffect(() => {
+    const container = messageContainerRef.current;
+    if (!container || isUserScrollUp) return;
+    // 滚动到最底部
+    container.scrollTop = container.scrollHeight;
+  }, [messages, isUserScrollUp]);
 
   return (
     <main
       className={`feature-chatroom ${messages.length ? "has-messages" : "is-empty"}`}
     >
       {messages.length > 0 && (
-        <section className="feature-messages">
+        // 绑定ref + 滚动监听
+        <section
+          ref={messageContainerRef}
+          className="feature-messages"
+          onScroll={handleScroll}
+          style={{ overflowY: "auto", flex: 1 }}
+        >
           {messages.map((message, index) => {
-            // 偶数 = 用户消息，奇数 = AI消息
             const senderType = index % 2 === 0 ? "user" : "assistant";
             return (
               <div className={`feature-message ${senderType}`} key={message.id}>
@@ -38,7 +65,6 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
             <p>向我提问、写点东西，或上传文件一起分析。</p>
           </section>
         )}
-        {error && <p role="alert">{error}</p>}
         <footer className="feature-composer">
           <textarea
             value={input}
@@ -46,14 +72,14 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                sendStream();
+                send();
               }
             }}
             placeholder={"输入消息..."}
             disabled={sending}
           />
           <button
-            onClick={() => void sendStream()}
+            onClick={() => void send()}
             aria-label="发送消息"
             disabled={sending}
           >

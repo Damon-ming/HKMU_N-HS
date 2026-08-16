@@ -6,18 +6,23 @@ export function chatMessageHook() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<ChatRoomMessage[]>([]);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
 
-  // 同步一次性请求
+  // 同步一次性请求（保留备用）
   const sendNormal = async () => {
     const query = input.trim();
     if (!query || sending) return;
 
     const userMsgId = `user-${Date.now()}`;
-    setMessages((items) => [...items, { id: userMsgId, text: query }]);
+    const assistantMsgId = `assistant-${Date.now()}`;
+
+    // 预先插入消息，AI气泡初始显示加载文案
+    setMessages((items) => [
+      ...items,
+      { id: userMsgId, text: query },
+      { id: assistantMsgId, text: "正在思考中..." },
+    ]);
     setInput("");
     setSending(true);
-    setError("");
 
     try {
       const req: ChatRoomRequest = {
@@ -27,20 +32,29 @@ export function chatMessageHook() {
       const res = await sendChatRoomMessage(req);
       const data = res.data;
       if (data) {
-        const assistantId = `assistant-${Date.now()}`;
-        setMessages((items) => [
-          ...items,
-          { id: assistantId, text: data.answer_content },
-        ]);
+        setMessages((items) =>
+          items.map((msg) =>
+            msg.id === assistantMsgId
+              ? { ...msg, text: data.answer_content }
+              : msg
+          )
+        );
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "消息发送失败");
+      const errMsg = e instanceof Error ? e.message : "消息发送失败，请稍后重试";
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMsgId
+            ? { ...msg, text: `${errMsg}` }
+            : msg
+        )
+      );
     } finally {
       setSending(false);
     }
   };
 
-  // SSE 流式打字效果（推荐使用）
+  // SSE流式（默认使用）
   const sendStream = async () => {
     const query = input.trim();
     if (!query || sending) return;
@@ -48,15 +62,16 @@ export function chatMessageHook() {
     const userMsgId = `user-${Date.now()}`;
     const assistantMsgId = `assistant-${Date.now()}`;
 
-    // 先插入用户消息 + 空助手占位消息，移除sender
+    // AI气泡初始展示加载提示「正在思考中...」
     setMessages((items) => [
       ...items,
       { id: userMsgId, text: query },
-      { id: assistantMsgId, text: "" },
+      { id: assistantMsgId, text: "正在思考中..." },
     ]);
     setInput("");
     setSending(true);
-    setError("");
+
+    let firstChunk = true;
 
     try {
       const req: ChatRoomRequest = {
@@ -69,22 +84,43 @@ export function chatMessageHook() {
           const data = payload.data as { answer_content: string };
           const delta = data.answer_content || "";
           setMessages((prev) =>
-            prev.map((msg) =>
-              msg.id === assistantMsgId
-                ? { ...msg, text: msg.text + delta }
-                : msg,
-            ),
+            prev.map((msg) => {
+              if (msg.id === assistantMsgId) {
+                // 第一条分片到来：直接丢弃加载文字，使用第一段内容
+                if (firstChunk) {
+                  firstChunk = false;
+                  return { ...msg, text: delta };
+                }
+                // 后续分片：持续追加
+                return { ...msg, text: msg.text + delta };
+              }
+              return msg;
+            })
           );
         } else if (payload.event === "done") {
           setSending(false);
         } else if (payload.event === "error") {
           const errData = payload.data as { error_msg: string };
-          setError(errData.error_msg || "流式请求异常");
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.id === assistantMsgId
+                ? { ...msg, text: `请求异常：${errData.error_msg}` }
+                : msg
+            )
+          );
           setSending(false);
         }
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "消息发送失败");
+      // 网络异常、接口请求失败统一捕获
+      const errMsg = e instanceof Error ? e.message : "消息发送失败，请稍后重试";
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === assistantMsgId
+            ? { ...msg, text: `${errMsg}` }
+            : msg
+        )
+      );
     } finally {
       setSending(false);
     }
@@ -95,7 +131,6 @@ export function chatMessageHook() {
     setInput,
     messages,
     sending,
-    error,
     sendNormal,
     sendStream,
   };
