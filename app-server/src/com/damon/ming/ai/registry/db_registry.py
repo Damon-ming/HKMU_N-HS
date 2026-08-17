@@ -2,7 +2,7 @@
 from src.com.damon.ming.ai.vector_db.factory import VectorStoreFactory
 from src.com.damon.ming.ai.vector_db.chroma_store import ChromaDBStore
 from src.com.damon.ming.ai.vector_db.pgvector_store import PGVectorStore
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 logger = pin("db_registry")
 

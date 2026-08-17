@@ -6,7 +6,7 @@ from typing import List
 
 from llama_index.core import Document
 import pymupdf4llm
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 class BaseDataSource(ABC):
     """数据源抽象：仅负责加载原始文档"""

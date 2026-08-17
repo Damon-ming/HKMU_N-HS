@@ -1,7 +1,7 @@
 # app-server/src/com/damon/ming/ai/tokenizer/tiktoken_tokenizer.py
 import tiktoken
 from typing import List
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.tokenizer.base_tokenizer import BaseTokenizer
 
 logger = pin("TiktokenTokenizer")

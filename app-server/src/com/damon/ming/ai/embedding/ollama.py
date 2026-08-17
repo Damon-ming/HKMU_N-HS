@@ -2,7 +2,7 @@
 from typing import List
 import time
 import hashlib
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.embedding.BaseEmbeddingService import BaseEmbeddingService
 
 class OllamaEmbedding(BaseEmbeddingService):
@@ -14,8 +14,8 @@ class OllamaEmbedding(BaseEmbeddingService):
     
     def __init__(
         self, 
-        model_name: str = "bge-m3",
-        base_url: str = "http://127.0.0.1:11434",
+        model_name: str,
+        base_url: str,
         timeout: int = 60,
         max_retries: int = 3
     ):

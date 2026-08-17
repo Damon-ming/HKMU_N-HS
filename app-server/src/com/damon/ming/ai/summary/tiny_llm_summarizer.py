@@ -2,7 +2,7 @@
 import time
 import hashlib
 from typing import Dict
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.summary.base_summarizer import BaseSummarizer
 
 logger = pin("TinyLLMSummarizer")
@@ -10,9 +10,9 @@ logger = pin("TinyLLMSummarizer")
 class TinyLLMSummarizer(BaseSummarizer):
     def __init__(
         self,
-        model_name: str = "qwen2.5:1.5b",
-        base_url: str = "http://127.0.0.1:11434",
-        timeout: int = 30,
+        model_name: str ,
+        base_url: str,
+        timeout: int,
         max_retries: int = 2,
         enable_cache: bool = True
     ):

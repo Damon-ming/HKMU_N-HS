@@ -1,7 +1,7 @@
 # app-server/src/com/damon/ming/ai/registry/summary_registry.py
 from src.com.damon.ming.ai.summary.summarizer_factory import SummarizerFactory
 from src.com.damon.ming.ai.summary.tiny_llm_summarizer import TinyLLMSummarizer
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 logger = pin("SummaryRegistry")
 

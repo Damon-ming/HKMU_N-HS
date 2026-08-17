@@ -10,6 +10,9 @@ from src.com.damon.ming.ai.schemas.response import BaseLLMFailedData, BaseLLMSuc
 from src.com.damon.ming.ai.schemas.inference_params import get_chat_schema
 import json
 from sse_starlette.sse import EventSourceResponse
+from src.com.damon.ming.log import pin
+
+logger = pin("chat.router")
 
 router = APIRouter(prefix="/api/llm", tags=["聊天模块"])
 
@@ -46,6 +49,7 @@ SYSTEM_PROMPT_TPL = """
 
 @router.post("/send/v1", response_class=BaseLLMSuccessResponse)
 async def chat(request: ChatRequest):
+    logger.info("同步聊天请求开始 | query_length=%s | think=%s", len(request.query), request.think)
     # 1. 调用RAG检索，获取拼接完整章节上下文
     ref_content = await rag_app.query_rag(request.query)
 
@@ -70,6 +74,7 @@ async def chat(request: ChatRequest):
 
     # 4. 组装返回结构体，think控制是否携带思考过程（当前固定空）
     resp_inner = json.loads(llm_raw)
+    logger.info("同步聊天请求完成")
 
     # 外层统一返回
     return BaseLLMSuccessResponse(bizCode=100000, data=resp_inner)
@@ -77,11 +82,13 @@ async def chat(request: ChatRequest):
 @router.post("/chat/v1", response_class=EventSourceResponse)
 async def chat_stream(request: ChatRequest):
     """流式问答接口，SSE流式输出"""
+    logger.info("流式聊天请求开始 | query_length=%s", len(request.query))
     generator = stream_chat_generator(request)
     return EventSourceResponse(generator)
 
 async def stream_chat_generator(request: ChatRequest):
     try:
+        logger.debug("开始执行流式 RAG 检索")
         ref_content = await rag_app.query_rag(request.query)
         system_prompt = SYSTEM_PROMPT_TPL.format(ref_content=ref_content)
         prompt_messages = [
@@ -107,8 +114,10 @@ async def stream_chat_generator(request: ChatRequest):
             data=ChatDoneData()
         )
         yield done_msg.model_dump_json(ensure_ascii=False)
+        logger.info("流式聊天请求完成")
 
     except Exception as e:
+        logger.exception("流式聊天请求失败")
         err_msg = StreamMessage[BaseLLMFailedData](
             bizCode=300001,
             event="error",

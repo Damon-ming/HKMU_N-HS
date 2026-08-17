@@ -4,7 +4,7 @@ import json
 import time
 from typing import List, Dict, Any, Optional, AsyncGenerator
 from openai import AsyncOpenAI
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.inference.base_inference import BaseInferenceService
 
 logger = pin("VLLMInference")

@@ -4,6 +4,9 @@ import uuid
 from fastapi import UploadFile
 from typing import List
 from src.com.damon.ming.upload.schemas.bean import FileUploadRequest
+from src.com.damon.ming.log import pin
+
+logger = pin("upload.service")
 
 UPLOAD_DIR = Path(__file__).resolve().parents[2] / "knowledges"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
@@ -30,6 +33,7 @@ class UploadService:
             file_path = UPLOAD_DIR / store_name
 
             content = await file.read()
+            logger.debug("开始保存文件 | filename=%s | size=%s", origin_name, len(content))
             with file_path.open("wb") as f:
                 f.write(content)
 
@@ -38,4 +42,5 @@ class UploadService:
                 "save_path": str(file_path),
                 "file_size": len(content)
             })
+        logger.info("文件保存完成 | count=%s", len(saved_files))
         return saved_files

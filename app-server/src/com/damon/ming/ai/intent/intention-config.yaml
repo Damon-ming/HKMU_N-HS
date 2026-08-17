@@ -3,7 +3,7 @@ intention:
   default:
     provider: ollama
     model_name: qwen:0.5b
-    base_url: http://127.0.0.1:11434
+    base_url: http://ollama-server:11434
     timeout: 20
     enable_cache: true
   fallback:

@@ -4,7 +4,7 @@ import uuid
 import json
 
 from llama_index.core.schema import TextNode
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 from src.com.damon.ming.ai.vector_db.base_vector_db import BaseVectorStore
 

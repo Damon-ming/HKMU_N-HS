@@ -2,14 +2,14 @@
 reranker:
   default:
     rerank_type: cross_encoder
-    model_name: BAAI/bge-reranker-v2-m3
+    model_name: ./models/bge-reranker-v2-m3
     batch_size: 16
     max_seq_len: 384
     device: null
 
   fallback:
     rerank_type: cross_encoder
-    model_name: BAAI/bge-reranker-base
+    model_name: ./models/bge-reranker-v2-m3
     batch_size: 8
     max_seq_len: 384
     device: cpu

@@ -31,6 +31,8 @@ services:
     restart: always
     ports:
       - "8000:8000"            # 映射宿主机 8000 端口到容器 8000 端口
+    volumes:
+      - /root/ming/models:/app-server/models
     environment:
       # 告诉后端代码通过容器名访问内部 Ollama
       - OLLAMA_BASE_URL=http://ollama-server:11434

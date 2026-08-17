@@ -4,7 +4,7 @@ from typing import List, Optional, Dict, Any
 import uuid
 
 from llama_index.core.schema import TextNode
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 from src.com.damon.ming.ai.vector_db.base_vector_db import BaseVectorStore
 

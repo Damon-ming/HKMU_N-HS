@@ -3,7 +3,7 @@ import json
 import time
 import ollama
 from typing import List, Dict, Any, Optional, AsyncGenerator
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.inference.base_inference import BaseInferenceService
 
 logger = pin("OllamaInference")
@@ -11,7 +11,7 @@ logger = pin("OllamaInference")
 class OllamaInference(BaseInferenceService):
     def __init__(
         self,
-        base_url: str = "http://127.0.0.1:11434",
+        base_url: str,
         timeout: int = 60,
         max_retries: int = 3,
         temperature: float = 0.1,

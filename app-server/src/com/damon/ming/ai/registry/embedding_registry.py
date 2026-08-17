@@ -2,7 +2,7 @@
 from src.com.damon.ming.ai.embedding.factory import EmbeddingFactory
 from src.com.damon.ming.ai.embedding.ollama import OllamaEmbedding
 from src.com.damon.ming.ai.embedding.huggingface import HuggingFaceEmbedding
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 logger = pin("Registry")
 

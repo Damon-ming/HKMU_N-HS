@@ -1,7 +1,7 @@
 # app-server/src/com/damon/ming/ai/registry/tokenizer_registry.py
 from src.com.damon.ming.ai.tokenizer.tokenizer_factory import TokenizerFactory
 from src.com.damon.ming.ai.tokenizer.tiktoken_tokenizer import TiktokenTokenizer
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 logger = pin("TokenizerRegistry")
 

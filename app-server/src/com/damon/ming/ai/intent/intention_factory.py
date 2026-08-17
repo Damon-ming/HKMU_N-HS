@@ -1,6 +1,6 @@
 # app-server/src/com/damon/ming/ai/intent/intention_factory.py
 from typing import Dict, Type
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.intent.base_intention import BaseIntentionClassifier
 from src.com.damon.ming.ai.intent.ollama_intention import OllamaIntentionClassifier
 

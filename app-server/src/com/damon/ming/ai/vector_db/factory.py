@@ -1,6 +1,6 @@
 # app-server/src/com/damon/ming/ai/vector_db/factory.py
 from typing import Dict, Type
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 from src.com.damon.ming.ai.vector_db.base_vector_db import BaseVectorStore
 

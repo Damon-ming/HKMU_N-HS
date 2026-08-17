@@ -4,14 +4,14 @@ embedding:
   default:
     provider: ollama
     model_name: bge-m3
-    base_url: http://127.0.0.1:11434
+    base_url: http://ollama-server:11434
     timeout: 60
   
   # 备用：Ollama bge-m3
   backup:
     provider: ollama
     model_name: nomic-embed-text
-    base_url: http://127.0.0.1:11434
+    base_url: http://ollama-server:11434
   
   # 备选：HuggingFace（GPU 环境）
   # fallback:

@@ -2,7 +2,7 @@
 import time
 import hashlib
 from typing import Dict, List, Optional, Any
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.intent.base_intention import BaseIntentionClassifier
 
 logger = pin("OllamaIntentionClassifier")
@@ -10,8 +10,8 @@ logger = pin("OllamaIntentionClassifier")
 class OllamaIntentionClassifier(BaseIntentionClassifier):
     def __init__(
         self,
-        model_name: str = "qwen:0.5b",
-        base_url: str = "http://127.0.0.1:11434",
+        model_name: str ,
+        base_url: str,
         timeout: int = 20,
         max_retries: int = 2,
         enable_cache: bool = True

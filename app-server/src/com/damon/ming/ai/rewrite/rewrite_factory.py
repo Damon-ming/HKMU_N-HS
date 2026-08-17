@@ -1,6 +1,6 @@
 # app-server/src/com/damon/ming/ai/rewrite/rewrite_factory.py
 from typing import Dict, Type
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.rewrite.base_rewriter import BaseQueryRewriter
 from src.com.damon.ming.ai.rewrite.ollama_rewriter import OllamaQueryRewriter
 

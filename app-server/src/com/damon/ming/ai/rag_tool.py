@@ -23,12 +23,16 @@ from src.com.damon.ming.ai.registry.summary_registry import register_all_summari
 from src.com.damon.ming.ai.summary.config import SummarizerConfig
 from src.com.damon.ming.ai.registry.rerank_registry import register_all_rerankers
 from src.com.damon.ming.ai.rerank.config import RerankerConfig
+from src.com.damon.ming.log import pin
+
+logger = pin("ai.rag")
 
 KNOWLEDGES_DIR = Path(__file__).resolve().parent.parent / "knowledges"
 
 # 1. 全局单例容器
 class RAGContainer:
     def __init__(self):
+        logger.info("RAG 容器初始化开始")
         # 步骤1：执行所有模块注册
         register_all_vector_dbs()
         register_all_embeddings()
@@ -94,6 +98,7 @@ class RAGContainer:
             for doc in docs:
                 bm25_nodes.extend(self.splitter.split([doc]))
             self.bm25_index.build(bm25_nodes)
+        logger.info("RAG 容器初始化完成")
 
     # 增量更新场景会丢失历史文档,需要增量逻辑
     def load_pdf_knowledge(self, folder_path: str = None) -> List[str]:
@@ -120,6 +125,7 @@ class RAGContainer:
         return node_ids
 
     async def query_rag(self, query: str, top_k: int = 5, max_context_tokens: int = 4096):
+        logger.info("RAG 检索开始 | query_length=%s | top_k=%s", len(query), top_k)
         # 1. 混合稠密+稀疏召回
         raw_nodes = self.hybrid_retriever.retrieve(
             query=query,
@@ -128,6 +134,7 @@ class RAGContainer:
             sparse_top_k=30
         )
         if not raw_nodes:
+            logger.info("RAG 检索无结果")
             return ""
 
         # 2. CrossEncoder 重排过滤低相关文档
@@ -188,4 +195,5 @@ class RAGContainer:
             # 全局token兜底截断
             final_context = self.section_recon.truncate_by_token(full_text, max_context_tokens)
 
+        logger.info("RAG 检索完成 | context_length=%s", len(final_context))
         return final_context

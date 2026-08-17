@@ -1,6 +1,6 @@
 # app-server/src/com/damon/ming/ai/inference/factory.py
 from typing import Dict, Type
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.inference.base_inference import BaseInferenceService
 
 logger = pin("InferenceFactory")

@@ -2,7 +2,7 @@
 from src.com.damon.ming.ai.inference.factory import InferenceFactory
 from src.com.damon.ming.ai.inference.ollama_inference import OllamaInference
 from src.com.damon.ming.ai.inference.vllm_inference import VLLMInference
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 logger = pin("InferenceRegistry")
 

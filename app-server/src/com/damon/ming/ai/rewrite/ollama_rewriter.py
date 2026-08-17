@@ -2,7 +2,7 @@
 import time
 import hashlib
 from typing import Dict, Optional, Any
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 from src.com.damon.ming.ai.rewrite.base_rewriter import BaseQueryRewriter
 
 logger = pin("OllamaQueryRewriter")
@@ -10,8 +10,8 @@ logger = pin("OllamaQueryRewriter")
 class OllamaQueryRewriter(BaseQueryRewriter):
     def __init__(
         self,
-        model_name: str = "qwen:1.8b",
-        base_url: str = "http://127.0.0.1:11434",
+        model_name: str,
+        base_url: str,
         timeout: int = 20,
         max_retries: int = 2,
         enable_cache: bool = True

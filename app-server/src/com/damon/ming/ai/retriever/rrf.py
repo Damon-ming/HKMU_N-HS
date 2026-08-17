@@ -1,7 +1,7 @@
 # app-server/src/com/damon/ming/ai/retriever/rrf.py
 from typing import List, Dict, Tuple
 from llama_index.core.schema import TextNode
-from src.com.damon.ming.ai.monitor.log import pin
+from src.com.damon.ming.log import pin
 
 
 class ReciprocalRankFusion:
