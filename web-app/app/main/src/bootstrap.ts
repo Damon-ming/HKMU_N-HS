@@ -22,7 +22,7 @@ export async function bootstrap(): Promise<void> {
  * 全局网络层初始化
  */
 function initGlobalNetwork() {
-  const baseURL = 'http://localhost:8000'
+  const baseURL = 'http://47.250.80.234:8000'
 
   initNetApi({
     baseURL,

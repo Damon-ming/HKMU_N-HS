@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # 1. Ollama 大模型服务
+  ollama:
+    image: ollama/ollama: 0.32.14
+    container_name: ollama-server
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - /root/ming/ollama/.ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      OLLAMA_HOST: 0.0.0.0
+      OLLAMA_ORIGINS: "*"
+
+
+# 2. Python 后端应用服务
+  app-server:
+    build:
+      context: ./app-server
+      dockerfile: Dockerfile   # 指定同级目录下的 Dockerfile
+    container_name: app-server
+    restart: always
+    ports:
+      - "8000:8000"            # 映射宿主机 8000 端口到容器 8000 端口
+    environment:
+      # 告诉后端代码通过容器名访问内部 Ollama
+      - OLLAMA_BASE_URL=http://ollama-server:11434
+    depends_on:
+      - ollama                 # 确保 Ollama 优先启动
+
+  # React 前端
+  web-app:
+    build:
+      context: ./web-app
+      dockerfile: Dockerfile
+    container_name: web-app
+    restart: always
+    ports:
+      - "80:80"  # 暴露 80 端口供浏览器直接访问
+    depends_on:
+      - app-server
