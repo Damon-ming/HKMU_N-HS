@@ -9,6 +9,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
 
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const [isUserScrollUp, setIsUserScrollUp] = useState(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   const handleScroll = () => {
     const container = messageContainerRef.current;
@@ -16,6 +17,30 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
     const { scrollTop, scrollHeight, clientHeight } = container;
     const isAtBottom = scrollHeight - scrollTop - clientHeight < 10;
     setIsUserScrollUp(!isAtBottom);
+  };
+
+  const scrollToBottom = () => {
+    const container = messageContainerRef.current;
+    if (!container) return;
+    container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+    setIsUserScrollUp(false);
+  };
+
+  const copyMessage = async (message: string, messageId: string) => {
+    try {
+      await navigator.clipboard.writeText(message);
+    } catch {
+      const textArea = document.createElement("textarea");
+      textArea.value = message;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      textArea.remove();
+    }
+    setCopiedMessageId(messageId);
+    window.setTimeout(() => setCopiedMessageId(null), 1200);
   };
 
   useEffect(() => {
@@ -39,27 +64,48 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
             return (
               <div
                 key={message.id}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`feature-message-row flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                {/* 气泡容器，强制换行兜底 */}
-                <div
-                  className={`feature-message ${message.role}`}
-                  style={{
-                    maxWidth: message.role === "user" ? "50%" : "100%",
-                    wordBreak: "break-all",
-                    whiteSpace: "normal",
-                  }}
-                >
-                  {message.role === "assistant" ? (
-                    <ReactMarkdown>{message.text}</ReactMarkdown>
-                  ) : (
-                    <span className="whitespace-pre-wrap">{message.text}</span>
-                  )}
+                <div className={`feature-message-shell ${message.role}`}>
+                  <div
+                    className={`feature-message ${message.role}`}
+                    style={{
+                      maxWidth: message.role === "user" ? "50%" : "100%",
+                      wordBreak: "break-word",
+                      whiteSpace: "normal",
+                    }}
+                  >
+                    {message.role === "assistant" ? (
+                      <ReactMarkdown>{message.text}</ReactMarkdown>
+                    ) : (
+                      <span className="whitespace-pre-wrap">{message.text}</span>
+                    )}
+                  </div>
+                  <button
+                    className="feature-copy-button"
+                    type="button"
+                    aria-label="复制消息"
+                    title={copiedMessageId === message.id ? "已复制" : "复制"}
+                    onClick={() => void copyMessage(message.text, message.id)}
+                  >
+                    {copiedMessageId === message.id ? "✓" : "⧉"}
+                  </button>
                 </div>
               </div>
             );
           })}
         </section>
+      )}
+      {messages.length > 0 && isUserScrollUp && (
+        <button
+          className="feature-scroll-bottom"
+          type="button"
+          aria-label="滚动到底部"
+          title="滚动到底部"
+          onClick={scrollToBottom}
+        >
+          ↓
+        </button>
       )}
       <section className="feature-composer-area">
         {messages.length === 0 && (

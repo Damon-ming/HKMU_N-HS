@@ -135,10 +135,8 @@ export function chatMessageHook() {
       );
     } finally {
       log.debug("sendStream finished", { streamFinished });
-      // 只有流没有正常结束才在这里修改状态
-      if (!streamFinished) {
-        setSending(false);
-      }
+      // 无论正常完成、服务端 error 还是网络异常，都释放输入框和发送按钮状态。
+      setSending(false);
     }
   };
 
