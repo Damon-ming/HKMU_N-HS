@@ -5,9 +5,9 @@ from src.com.damon.ming.schemas.response import BaseSuccessResponse, BaseFailedR
 from src.com.damon.ming.upload.schemas.bean import FileUploadRequest, FileUploadSuccessData, FileUploadFailedData
 from src.com.damon.ming.upload.service.upload_service import UploadService
 
-router = APIRouter(prefix="/api/v1/files", tags=["文件管理"])
+router = APIRouter(prefix="/api/files", tags=["文件管理"])
 
-@router.post("/upload", response_model=BaseSuccessResponse[FileUploadSuccessData])
+@router.post("/upload/v1", response_model=BaseSuccessResponse[FileUploadSuccessData])
 async def save_files(
     files: list[UploadFile] = File(..., description="多文件"),
     meta_json: str = Form("", description="额外业务参数，JSON字符串")

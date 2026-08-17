@@ -6,6 +6,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@ming/core-log": "workspace:*",
     "@ming/data-layer": "workspace:*",
     "@ming/biz-common-net-api": "workspace:*"
   }

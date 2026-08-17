@@ -1,6 +1,9 @@
 import { uploadFile as requestUploadFile } from '../api'
 import type { BizApiResponse } from '@ming/biz-common-net-api'
 import type { UploadRequest, UploadResponse } from '../types/types'
+import { createLogger } from '@ming/core-log'
+
+const log = createLogger('upload/hook')
 
 function createUploadRequest(files: File[]): UploadRequest {
   if (!files.length) throw new Error('至少选择一个文件')
@@ -21,5 +24,13 @@ function createUploadRequest(files: File[]): UploadRequest {
 }
 
 export async function uploadFile(files: File[]): Promise<BizApiResponse<UploadResponse>> {
-  return requestUploadFile(createUploadRequest(files))
+  log.debug('upload started', { fileCount: files.length, fileNames: files.map(file => file.name) })
+  try {
+    const response = await requestUploadFile(createUploadRequest(files))
+    log.debug('upload succeeded', { fileCount: files.length })
+    return response
+  } catch (error) {
+    log.error('upload failed', error, { fileCount: files.length })
+    throw error
+  }
 }

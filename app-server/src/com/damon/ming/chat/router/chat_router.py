@@ -11,7 +11,7 @@ from src.com.damon.ming.ai.schemas.inference_params import get_chat_schema
 import json
 from sse_starlette.sse import EventSourceResponse
 
-router = APIRouter(prefix="api/llm/v1", tags=["聊天模块"])
+router = APIRouter(prefix="/api/llm", tags=["聊天模块"])
 
 # 全局单例初始化
 rag_app = RAGContainer()
@@ -44,7 +44,7 @@ SYSTEM_PROMPT_TPL = """
 {ref_content}
 """
 
-@router.post("/send", response_class=BaseLLMSuccessResponse)
+@router.post("/send/v1", response_class=BaseLLMSuccessResponse)
 async def chat(request: ChatRequest):
     # 1. 调用RAG检索，获取拼接完整章节上下文
     ref_content = await rag_app.query_rag(request.query)
@@ -74,7 +74,7 @@ async def chat(request: ChatRequest):
     # 外层统一返回
     return BaseLLMSuccessResponse(bizCode=100000, data=resp_inner)
 
-@router.post("/chat", response_class=EventSourceResponse)
+@router.post("/chat/v1", response_class=EventSourceResponse)
 async def chat_stream(request: ChatRequest):
     """流式问答接口，SSE流式输出"""
     generator = stream_chat_generator(request)

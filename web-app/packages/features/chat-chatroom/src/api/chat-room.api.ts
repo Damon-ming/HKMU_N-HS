@@ -1,17 +1,26 @@
 import { dataApi } from "@ming/data-layer";
 import type { ChatRoomApiResponse, ChatRoomRequest, ChatSseMessage } from "../types";
+import { createLogger } from "@ming/core-log";
+
+const log = createLogger("chat-chatroom/api");
 
 // 同步接口 /api/llm/v1/send
 export const sendChatRoomMessage = (
   request: ChatRoomRequest,
-): Promise<ChatRoomApiResponse> => dataApi.post("/api/llm/v1/send", request);
+): Promise<ChatRoomApiResponse> => {
+  log.debug("send request", { endpoint: "/api/llm/send/v1", queryLength: request.query.length });
+  return dataApi.post("/api/llm/send/v1", request)
+    .then((response) => { log.debug("send response received"); return response; })
+    .catch((error) => { log.error("send request failed", error); throw error; });
+};
 
 // 流式接口 /api/llm/v1/chat SSE
 export const streamChatRoomMessage = async (
   request: ChatRoomRequest,
   onMessage: (payload: ChatSseMessage) => void
 ) => {
-  const res = await fetch("/api/llm/v1/chat", {
+  log.debug("stream request", { endpoint: "/api/llm/chat/v1", queryLength: request.query.length });
+  const res = await fetch("/api/llm/chat/v1", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,10 +31,10 @@ export const streamChatRoomMessage = async (
     body: JSON.stringify(request),
   });
 
-  if (!res.ok) throw new Error(`请求失败 status:${res.status}`);
+  if (!res.ok) { const error = new Error(`请求失败 status:${res.status}`); log.error("stream response failed", error, { status: res.status }); throw error; }
 
   const reader = res.body?.getReader();
-  if (!reader) throw new Error("当前环境不支持流式读取");
+  if (!reader) { const error = new Error("当前环境不支持流式读取"); log.error("stream reader unavailable", error); throw error; }
 
   const decoder = new TextDecoder("utf-8");
   let buffer = "";
@@ -46,8 +55,9 @@ export const streamChatRoomMessage = async (
         const payload = JSON.parse(jsonStr) as ChatSseMessage;
         onMessage(payload);
       } catch (err) {
-        console.warn("SSE JSON解析异常", jsonStr);
+        log.warn("SSE JSON parse failed", { json: jsonStr });
       }
     }
   }
+  log.debug("stream response completed");
 };

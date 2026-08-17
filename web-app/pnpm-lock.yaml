@@ -71,6 +71,8 @@ importers:
         specifier: workspace:*
         version: link:../../core/network
 
+  packages/core/log: {}
+
   packages/core/network:
     dependencies:
       react:
@@ -122,6 +124,9 @@ importers:
       '@ming/biz-common-net-api':
         specifier: workspace:*
         version: link:../../biz-common/net-api
+      '@ming/core-log':
+        specifier: workspace:*
+        version: link:../../core/log
       '@ming/data-layer':
         specifier: workspace:*
         version: link:../../data-layer
@@ -181,6 +186,9 @@ importers:
       '@ming/biz-common-net-api':
         specifier: workspace:*
         version: link:../../biz-common/net-api
+      '@ming/core-log':
+        specifier: workspace:*
+        version: link:../../core/log
       '@ming/data-layer':
         specifier: workspace:*
         version: link:../../data-layer

@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { ChatRoomMessage, ChatRoomRequest } from "../types";
 import { sendChatRoomMessage, streamChatRoomMessage } from "../api";
+import { createLogger } from "@ming/core-log";
+
+const log = createLogger("chat-chatroom/hook");
 
 export function chatMessageHook() {
   const [input, setInput] = useState("");
@@ -10,7 +13,11 @@ export function chatMessageHook() {
   // 同步一次性请求（保留备用）
   const sendNormal = async () => {
     const query = input.trim();
-    if (!query || sending) return;
+    if (!query || sending) {
+      log.debug("sendNormal skipped", { hasQuery: Boolean(query), sending });
+      return;
+    }
+    log.debug("sendNormal started", { queryLength: query.length });
 
     const userMsgId = `user-${Date.now()}`;
     const assistantMsgId = `assistant-${Date.now()}`;
@@ -30,6 +37,7 @@ export function chatMessageHook() {
         think: false,
       };
       const res = await sendChatRoomMessage(req);
+      log.debug("sendNormal succeeded");
       const data = res.data;
       if (data) {
         setMessages((items) =>
@@ -41,6 +49,7 @@ export function chatMessageHook() {
         );
       }
     } catch (e) {
+      log.error("sendNormal failed", e);
       const errMsg = e instanceof Error ? e.message : "消息发送失败，请稍后重试";
       setMessages((prev) =>
         prev.map((msg) =>
@@ -57,7 +66,11 @@ export function chatMessageHook() {
   // SSE流式（默认使用）
   const sendStream = async () => {
     const query = input.trim();
-    if (!query || sending) return;
+    if (!query || sending) {
+      log.debug("sendStream skipped", { hasQuery: Boolean(query), sending });
+      return;
+    }
+    log.debug("sendStream started", { queryLength: query.length });
 
     const userMsgId = `user-${Date.now()}`;
     const assistantMsgId = `assistant-${Date.now()}`;
@@ -80,6 +93,7 @@ export function chatMessageHook() {
       };
 
       await streamChatRoomMessage(req, (payload) => {
+        log.debug("sendStream received event", { event: payload.event });
         if (payload.event === "delta") {
           const data = payload.data as { answer_content: string };
           const delta = data.answer_content || "";
@@ -110,6 +124,7 @@ export function chatMessageHook() {
         }
       });
     } catch (e) {
+      log.error("sendStream failed", e);
       const errMsg = e instanceof Error ? e.message : "消息发送失败，请稍后重试";
       setMessages((prev) =>
         prev.map((msg) =>
@@ -119,6 +134,7 @@ export function chatMessageHook() {
         )
       );
     } finally {
+      log.debug("sendStream finished", { streamFinished });
       // 只有流没有正常结束才在这里修改状态
       if (!streamFinished) {
         setSending(false);

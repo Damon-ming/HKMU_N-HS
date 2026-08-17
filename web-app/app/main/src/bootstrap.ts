@@ -22,7 +22,8 @@ export async function bootstrap(): Promise<void> {
  * 全局网络层初始化
  */
 function initGlobalNetwork() {
-  const baseURL = 'http://47.250.197.30:8000'
+  // 统一通过 Nginx 的 /api 反向代理访问后端，避免 80 与 8000 端口跨域。
+  const baseURL = ''
 
   initNetApi({
     baseURL,

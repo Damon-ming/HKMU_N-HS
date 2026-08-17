@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "pnpm dev:main",
     "dev:main": "cd app/main && pnpm dev",
-    "build": "cd app/main && pnpm build"
+    "build": "cd app/main && pnpm build",
+    "build:docker": "cd app/main && pnpm build" 
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

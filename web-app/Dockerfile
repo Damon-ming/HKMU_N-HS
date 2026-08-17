@@ -13,7 +13,7 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 
 # 3. 编译打包 main 子应用
-RUN pnpm --filter main build
+RUN pnpm build:docker
 
 # 阶段 2: Nginx 静态托管
 FROM nginx:alpine
