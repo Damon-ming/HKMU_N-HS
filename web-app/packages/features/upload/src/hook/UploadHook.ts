@@ -17,7 +17,7 @@ function createUploadRequest(files: File[]): UploadRequest {
     throw new Error('仅支持 PDF、Excel、PNG、JPEG、CSV 文件')
   }
   if (files.some(file => file.size > 10 * 1024 * 1024)) throw new Error('单个大小不能超过 10MB')
-  return { files, requestId: crypto.randomUUID(), requestedAt: Date.now() }
+  return { files, requestId: Date.now(), requestedAt: Date.now() }
 }
 
 export async function uploadFile(files: File[]): Promise<BizApiResponse<UploadResponse>> {
