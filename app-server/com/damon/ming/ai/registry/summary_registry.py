@@ -7,5 +7,5 @@ logger = pin("SummaryRegistry")
 
 def register_all_summarizers():
     """启动自动注册所有摘要实现"""
-    SummarizerFactory.register("tiny_ollama", TinyLLMSummarizer)
+    SummarizerFactory.register("ollama", TinyLLMSummarizer)
     logger.info(f"[Registry] 已注册摘要器: {SummarizerFactory.list_providers()}")

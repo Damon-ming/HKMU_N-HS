@@ -25,4 +25,4 @@ class SummarizerFactory:
     def list_providers(cls) -> list:
         return list(cls._registry.keys())
 
-SummarizerFactory.register("tiny_ollama", TinyLLMSummarizer)
+SummarizerFactory.register("ollama", TinyLLMSummarizer)

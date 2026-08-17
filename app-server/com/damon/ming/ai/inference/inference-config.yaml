@@ -10,7 +10,7 @@ inference:
     top_p: 0.9
     num_ctx: 4096
     # 新增：主问答模型、摘要模型
-    llm_model: "qwen:1.8b"
+    llm_model: qwen2.5:7b-instruct
 
   # 生产环境 VLLM OpenAI兼容接口
   production:
@@ -22,4 +22,4 @@ inference:
     temperature: 0.1
     top_p: 0.9
     num_ctx: 4096
-    llm_model: "Qwen2-7B-Instruct"
+    llm_model: qwen2.5:7b-instruct
