@@ -43,9 +43,9 @@ env/
 *.egg
 
 # 忽略知识库pdf
-app-server/com/damon/ming/knowledges/
+app-server/src/com/damon/ming/knowledges/
 # 向量库缓存
-app-server/chroma_data/
+app-server/src/com/damon/ming/chroma_data/
 
 # ========== 全局杂项 ==========
 # pnpm本地缓存
