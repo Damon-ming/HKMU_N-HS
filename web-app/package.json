@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "pnpm dev:main",
-    "dev:main": "cd app/main && pnpm dev",
-    "build": "cd app/main && pnpm build",
-    "build:docker": "cd app/main && pnpm build" 
+    "dev:main": "cd src/app/main && pnpm dev",
+    "build": "cd src/app/main && pnpm build",
+    "build:docker": "cd src/app/main && pnpm build" 
   },
   "devDependencies": {
     "@types/react": "^19.2.18",

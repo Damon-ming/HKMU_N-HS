@@ -19,7 +19,7 @@ RUN pnpm build:docker
 FROM nginx:alpine
 
 # 将构建产物（app/main/dist）复制到 Nginx 托管目录
-COPY --from=builder /web-app/app/main/dist /usr/share/nginx/html
+COPY --from=builder /web-app/src/app/main/dist /usr/share/nginx/html
 
 # 覆盖 Nginx 配置文件
 COPY nginx.conf /etc/nginx/conf.d/default.conf

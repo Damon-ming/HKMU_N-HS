@@ -10,7 +10,7 @@ importers:
     devDependencies:
       '@ming/features-upload':
         specifier: workspace:*
-        version: link:packages/features/upload
+        version: link:src/packages/features/upload
       '@types/react':
         specifier: ^19.2.18
         version: 19.2.18
@@ -21,7 +21,7 @@ importers:
         specifier: ^5.7.0
         version: 5.9.3
 
-  app/main:
+  src/app/main:
     dependencies:
       '@ming/biz-common-net-api':
         specifier: workspace:*
@@ -46,7 +46,7 @@ importers:
         specifier: ^5.4.0
         version: 5.4.21
 
-  packages/biz-common/net:
+  src/packages/biz-common/net:
     dependencies:
       react:
         specifier: ^18.2.0
@@ -62,7 +62,7 @@ importers:
         specifier: ^1.7.7
         version: 1.19.0(debug@4.4.3)
 
-  packages/biz-common/net-api:
+  src/packages/biz-common/net-api:
     dependencies:
       '@ming/biz-common-net':
         specifier: workspace:*
@@ -71,9 +71,9 @@ importers:
         specifier: workspace:*
         version: link:../../core/network
 
-  packages/core/log: {}
+  src/packages/core/log: {}
 
-  packages/core/network:
+  src/packages/core/network:
     dependencies:
       react:
         specifier: ^18.2.0
@@ -86,7 +86,7 @@ importers:
         specifier: ^1.7.7
         version: 1.19.0(debug@4.4.3)
 
-  packages/data-layer:
+  src/packages/data-layer:
     dependencies:
       '@tanstack/react-query':
         specifier: ^5.0.0
@@ -96,15 +96,15 @@ importers:
         specifier: workspace:*
         version: link:../biz-common/net-api
 
-  packages/features/account: {}
+  src/packages/features/account: {}
 
-  packages/features/account-api:
+  src/packages/features/account-api:
     dependencies:
       '@ming/features-account':
         specifier: workspace:*
         version: link:../account
 
-  packages/features/chat:
+  src/packages/features/chat:
     dependencies:
       '@ming/features-chat-chatroom':
         specifier: workspace:*
@@ -119,7 +119,7 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
 
-  packages/features/chat-chatroom:
+  src/packages/features/chat-chatroom:
     dependencies:
       '@ming/biz-common-net-api':
         specifier: workspace:*
@@ -140,7 +140,7 @@ importers:
         specifier: ^9.0.1
         version: 9.1.0(@types/react@19.2.18)(react@18.3.1)
 
-  packages/features/chat-drawer:
+  src/packages/features/chat-drawer:
     dependencies:
       '@ming/features-account-api':
         specifier: workspace:*
@@ -158,21 +158,21 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
 
-  packages/features/history:
+  src/packages/features/history:
     dependencies:
       react:
         specifier: ^18.2.0
         version: 18.3.1
 
-  packages/features/history-api:
+  src/packages/features/history-api:
     dependencies:
       '@ming/features-history':
         specifier: workspace:*
         version: link:../history
 
-  packages/features/search: {}
+  src/packages/features/search: {}
 
-  packages/features/search-api:
+  src/packages/features/search-api:
     dependencies:
       '@ming/features-history-api':
         specifier: workspace:*
@@ -181,7 +181,7 @@ importers:
         specifier: workspace:*
         version: link:../search
 
-  packages/features/upload:
+  src/packages/features/upload:
     dependencies:
       '@ming/biz-common-net-api':
         specifier: workspace:*
@@ -193,7 +193,7 @@ importers:
         specifier: workspace:*
         version: link:../../data-layer
 
-  packages/features/upload-api:
+  src/packages/features/upload-api:
     dependencies:
       '@ming/features-upload':
         specifier: workspace:*
@@ -660,13 +660,13 @@ packages:
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
 
-  baseline-browser-mapping@2.11.12:
-    resolution: {integrity: sha512-r7WnVImvVCeFpf2DOXfy41aPWzeNg3H/A2X4dKmy1QL0MSyyk/e7z8ihJ3N6Nn2PsdhkVlqnEfnUE4a05P2aTA==}
+  baseline-browser-mapping@2.11.14:
+    resolution: {integrity: sha512-JyJ954WzuIR8/FFzX0o5krdSTrBAkcCSRfWSleRsIHSWV+cZe2FI1PKggVkFke1hBldRs+LRxUczzE9iPmgZww==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
-  browserslist@4.28.7:
-    resolution: {integrity: sha512-JxV13hNrFxqjOc8alRbq9dK1MM79NEXYpma2B2J4wAtpWS5zIEIKqWPGCl7N4o7Uc7B7itylh7SuDujATRyyTw==}
+  browserslist@4.28.8:
+    resolution: {integrity: sha512-V2NpofLblG64mfOtSgDhOJESZEGogzDMBv/q+W6oc4LXWP/q75eOXoOaaOu1EOadB9U4Bwx/e0yzbvwKH8zalA==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
@@ -732,8 +732,8 @@ packages:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
 
-  electron-to-chromium@1.5.402:
-    resolution: {integrity: sha512-/oOpMaPT6Yg+6/1XQhyIPlzgj7Ye9zf+nNM2Uh6OcE2G2oNptWazFa+qB2Pdqqbsc9KnIDzgAntoYN0dbwOXwA==}
+  electron-to-chromium@1.5.407:
+    resolution: {integrity: sha512-4R8XgQOdfxexCd/u63lRm6wCHjECwI45MV9wxAs2ggtfWe2hwlo1ql97jKsju2IcJ+jFSTwBssyYoiWhh7mauQ==}
 
   es-define-property@1.0.1:
     resolution: {integrity: sha512-e3nRfgfUZ4rNGL232gUgX06QNyyez04KdjFrF+LTRoOXmrOgFKDg4BCdsjW8EnT69eqdYGmRpJwiPVYNrCaW3g==}
@@ -1080,8 +1080,8 @@ packages:
   unist-util-visit@5.1.0:
     resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
 
-  update-browserslist-db@1.3.0:
-    resolution: {integrity: sha512-x/M6q3w4Ybp91CNaS4S69UnliqR3BzRpOT6LWbksjth0S/+jhfaPJsWjt/TewpT8j9eLIojUf5jr29WextHroA==}
+  update-browserslist-db@1.3.1:
+    resolution: {integrity: sha512-ZZ61DsRsOnakl74HAmp3oSN4aXUmEWXf+i/yv0h7tIBfICc3VdrFErQKUUKPgu3AMsTUMbcongALEN4l6GSUrQ==}
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
@@ -1171,7 +1171,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/helper-validator-option': 7.29.7
-      browserslist: 4.28.7
+      browserslist: 4.28.8
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -1505,15 +1505,15 @@ snapshots:
 
   bail@2.0.2: {}
 
-  baseline-browser-mapping@2.11.12: {}
+  baseline-browser-mapping@2.11.14: {}
 
-  browserslist@4.28.7:
+  browserslist@4.28.8:
     dependencies:
-      baseline-browser-mapping: 2.11.12
+      baseline-browser-mapping: 2.11.14
       caniuse-lite: 1.0.30001809
-      electron-to-chromium: 1.5.402
+      electron-to-chromium: 1.5.407
       node-releases: 2.0.53
-      update-browserslist-db: 1.3.0(browserslist@4.28.7)
+      update-browserslist-db: 1.3.1(browserslist@4.28.8)
 
   call-bind-apply-helpers@1.0.2:
     dependencies:
@@ -1564,7 +1564,7 @@ snapshots:
       es-errors: 1.3.0
       gopd: 1.2.0
 
-  electron-to-chromium@1.5.402: {}
+  electron-to-chromium@1.5.407: {}
 
   es-define-property@1.0.1: {}
 
@@ -2125,9 +2125,9 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  update-browserslist-db@1.3.0(browserslist@4.28.7):
+  update-browserslist-db@1.3.1(browserslist@4.28.8):
     dependencies:
-      browserslist: 4.28.7
+      browserslist: 4.28.8
       escalade: 3.2.0
       picocolors: 1.1.1
 

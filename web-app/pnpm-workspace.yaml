@@ -1,7 +1,7 @@
 # ming-web/pnpm-workspace.yaml
 packages:
-  - 'app/*'
-  - 'packages/**'    # ← 匹配 packages 下所有层级的 package.json
+  - 'src/app/*'
+  - 'src/packages/**'    
 allowBuilds:
   # 显式允许 esbuild 运行它的安装脚本
   esbuild: true
