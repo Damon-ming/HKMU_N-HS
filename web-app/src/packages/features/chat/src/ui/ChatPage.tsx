@@ -1,13 +1,15 @@
 import React from "react";
-import { useChatStore } from "@ming/store/biz/chat-store";
+import { useChatUiStore, useChatUploadStore } from "@ming/store/biz/chat-state";
 import { ChatDrawer } from "@ming/features-chat-drawer";
 import { ChatChatroom } from "@ming/features-chat-chatroom";
 
 export const ChatPage: React.FC = () => {
-  const drawerOpen = useChatStore((state) => state.drawerOpen);
-  const chatSessionId = useChatStore((state) => state.sessionId);
-  const toggleDrawer = useChatStore((state) => state.toggleDrawer);
-  const clearChat = useChatStore((state) => state.resetSession);
+  const drawerOpen = useChatUiStore((state) => state.drawerOpen);
+  const chatSessionId = useChatUiStore((state) => state.sessionId);
+  const toggleDrawer = useChatUiStore((state) => state.toggleDrawer);
+  const clearChat = useChatUiStore((state) => state.resetSession);
+  const upload = useChatUploadStore((state) => state.upload);
+  const closeUpload = useChatUploadStore((state) => state.closeUpload);
   return (
     <div className="feature-chat-page">
       <ChatDrawer
@@ -16,6 +18,17 @@ export const ChatPage: React.FC = () => {
         onNewChat={clearChat}
       />
       <ChatChatroom key={chatSessionId} />
+      {upload.status !== "idle" && (
+        <div className="feature-upload-modal-backdrop" role="presentation">
+          <section className={`feature-upload-modal ${upload.status}`} role="dialog" aria-modal="true" aria-labelledby="upload-title">
+            <div className="feature-upload-icon">{upload.status === "uploading" ? "↥" : upload.status === "success" ? "✓" : "!"}</div>
+            <h2 id="upload-title">{upload.status === "uploading" ? "正在上传文件" : upload.status === "success" ? "上传完成" : "上传失败"}</h2>
+            <p>{upload.message}</p>
+            {upload.fileNames.length > 0 && <small>{upload.fileNames.join("、")}</small>}
+            {upload.status !== "uploading" && <button type="button" onClick={closeUpload}>知道了</button>}
+          </section>
+        </div>
+      )}
       <style>{styles}</style>
       <style>{motionStyles}</style>
     </div>
@@ -29,6 +42,8 @@ const styles = `
 const motionStyles = `
 .feature-messages{scrollbar-width:thin;scrollbar-color:#c7cdea transparent;overscroll-behavior:contain;scroll-behavior:smooth}.feature-messages::-webkit-scrollbar{width:8px}.feature-messages::-webkit-scrollbar-track{background:transparent;margin:12px 0}.feature-messages::-webkit-scrollbar-thumb{border:2px solid transparent;border-radius:99px;background-clip:padding-box;background-color:#c7cdea}.feature-messages::-webkit-scrollbar-thumb:hover{background-color:#9da7df}
 .feature-chat-page{position:relative;isolation:isolate;background-image:radial-gradient(circle at 75% 0%,rgba(224,228,255,.9),transparent 34%),radial-gradient(circle at 30% 100%,rgba(237,225,255,.6),transparent 28%);}
+.feature-upload-modal-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(19,27,52,.3);backdrop-filter:blur(7px);cursor:wait}.feature-upload-modal{width:min(420px,calc(100vw - 36px));padding:34px 30px 28px;border:1px solid rgba(255,255,255,.75);border-radius:26px;background:rgba(255,255,255,.96);box-shadow:0 30px 90px rgba(27,38,82,.28);text-align:center;cursor:default;animation:feature-modal-in .3s cubic-bezier(.22,1,.36,1)}.feature-upload-icon{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 18px;border-radius:19px;background:#eef0ff;color:#5965dc;font-size:29px;font-weight:800}.feature-upload-modal.uploading .feature-upload-icon{animation:feature-upload-pulse 1.2s ease-in-out infinite}.feature-upload-modal.success .feature-upload-icon{background:#e9fbf1;color:#169456}.feature-upload-modal.error .feature-upload-icon{background:#fff0f0;color:#d14343}.feature-upload-modal h2{margin:0;color:#1f2940;font-size:21px}.feature-upload-modal p{margin:10px 0 5px;color:#667085;font-size:14px;line-height:1.6}.feature-upload-modal small{display:block;margin-top:8px;color:#98a2b3;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.feature-upload-modal button{min-width:112px;margin-top:22px;padding:10px 18px;border:0;border-radius:11px;background:linear-gradient(135deg,#5865f2,#7660ed);color:#fff;font-weight:700;cursor:pointer;box-shadow:0 8px 18px rgba(88,101,242,.22)}
+@keyframes feature-modal-in{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}@keyframes feature-upload-pulse{0%,100%{box-shadow:0 0 0 0 rgba(88,101,242,.12);transform:translateY(0)}50%{box-shadow:0 0 0 12px rgba(88,101,242,0);transform:translateY(-3px)}}
 .feature-upload-file{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:38px;margin-top:9px;border:1px dashed #cfd5ea;border-radius:11px;color:#6874c9;background:#f8f9ff;font-size:12px;font-weight:600;cursor:pointer;transition:.2s}.feature-upload-file:hover{border-color:#8993ef;background:#f0f2ff;transform:translateY(-1px)}.feature-collapsed-upload{display:grid;place-items:center;width:40px;height:40px;border:1px solid #e1e6f0;border-radius:12px;background:rgba(255,255,255,.9);color:#5965dc;box-shadow:0 8px 20px #25344b12;cursor:pointer;transition:.2s}.feature-collapsed-upload:hover{background:#f0f2ff;transform:translateY(-2px)}
 .feature-chat-page:before,.feature-chat-page:after{content:"";position:absolute;z-index:-1;border-radius:999px;pointer-events:none;filter:blur(2px);animation:feature-float 10s ease-in-out infinite}
 .feature-chat-page:before{width:280px;height:280px;right:-90px;top:-120px;background:#dfe3ff;opacity:.55}.feature-chat-page:after{width:200px;height:200px;left:28%;bottom:-130px;background:#eadfff;opacity:.5;animation-delay:-4s}

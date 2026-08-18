@@ -157,6 +157,9 @@ importers:
       '@ming/features-upload-api':
         specifier: workspace:*
         version: link:../upload-api
+      '@ming/store':
+        specifier: workspace:*
+        version: link:../../store
       react:
         specifier: ^18.2.0
         version: 18.3.1

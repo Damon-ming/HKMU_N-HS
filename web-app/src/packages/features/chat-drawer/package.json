@@ -4,6 +4,7 @@
   "type": "module",
   "exports": { ".": "./src/index.ts" },
   "dependencies": {
+    "@ming/store": "workspace:*",
     "@ming/features-history-api": "workspace:*",
     "@ming/features-search-api": "workspace:*",
     "@ming/features-account-api": "workspace:*",

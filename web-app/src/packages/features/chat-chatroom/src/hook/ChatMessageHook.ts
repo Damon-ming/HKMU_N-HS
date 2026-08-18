@@ -1,4 +1,4 @@
-import { useChatStore } from "@ming/store/biz/chat-store";
+import { useChatMessageStore } from "@ming/store/biz/chat-state";
 import { ChatRoomMessage, ChatRoomRequest } from "../types";
 import { sendChatRoomMessage, streamChatRoomMessage } from "../api";
 import { createLogger } from "@ming/core-log";
@@ -7,7 +7,7 @@ const log = createLogger("chat-chatroom/hook");
 
 export function chatMessageHook() {
   const { input, setInput, messages, setMessages, sending, setSending } =
-    useChatStore();
+    useChatMessageStore();
 
   // 同步一次性请求（保留备用）
   const sendNormal = async () => {

@@ -3,6 +3,7 @@ import { getHistoryList } from "@ming/features-history-api"
 import { searchHistory } from "@ming/features-search-api"
 import { getCurrentAccount } from "@ming/features-account-api"
 import { useUploadApi } from "@ming/features-upload-api"
+import { useChatUploadStore } from "@ming/store/biz/chat-state"
 
 export interface ChatDrawerProps {
   open: boolean;
@@ -18,8 +19,9 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   onSelectChat,
 }) => {
   const [search, setSearch] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [uploadNotice, setUploadNotice] = useState("");
+  const uploading = useChatUploadStore((state) => state.upload.status === "uploading");
+  const startUpload = useChatUploadStore((state) => state.startUpload);
+  const finishUpload = useChatUploadStore((state) => state.finishUpload);
   const items = useMemo(
     () => (search ? searchHistory(search) : getHistoryList()),
     [search],
@@ -28,16 +30,12 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
   const onUploadFile = async (fileList?: FileList | null) => {
     const files = fileList ? Array.from(fileList) : [];
     if (!files.length) return;
-    setUploadNotice("");
-    setUploading(true);
+    startUpload(files.map((file) => file.name));
     try {
-      await useUploadApi(files);
-      setUploadNotice("文件上传成功");
-      window.setTimeout(() => setUploadNotice(""), 2800);
+      const response = await useUploadApi(files);
+      finishUpload("success", response.data ? "文件已经进入语料库" : "文件上传成功");
     } catch (e) {
-      setUploadNotice(e instanceof Error ? e.message : "文件上传失败");
-    } finally {
-      setUploading(false);
+      finishUpload("error", e instanceof Error ? e.message : "文件上传失败");
     }
   };
   return (
@@ -56,7 +54,6 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
             <span>{uploading ? "◌ 正在上传文件..." : "⌁ 上传文件"}</span>
             <input hidden multiple accept=".pdf,.xls,.xlsx,.png,.jpg,.jpeg,.csv" type="file" onChange={(e) => onUploadFile(e.target.files)} />
           </label>
-          {uploadNotice && <div className="feature-upload-toast" role="status">✓ {uploadNotice}</div>}
           <label className="feature-search">
             ⌕
             <input
@@ -102,7 +99,6 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           </label>
         </div>
       )}
-      <style>{`.feature-upload-toast{margin:10px 0 0;padding:10px 12px;border:1px solid #b7ebd1;border-radius:12px;background:#effcf5;color:#16794a;font-size:12px;font-weight:600;box-shadow:0 8px 18px rgba(22,121,74,.1);animation:feature-upload-toast-in .25s ease-out}@keyframes feature-upload-toast-in{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}`}</style>
     </aside>
   );
 };
