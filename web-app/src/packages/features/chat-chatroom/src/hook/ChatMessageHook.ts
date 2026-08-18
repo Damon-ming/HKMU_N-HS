@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useChatStore } from "@ming/store/biz/chat-store";
 import { ChatRoomMessage, ChatRoomRequest } from "../types";
 import { sendChatRoomMessage, streamChatRoomMessage } from "../api";
 import { createLogger } from "@ming/core-log";
@@ -6,9 +6,8 @@ import { createLogger } from "@ming/core-log";
 const log = createLogger("chat-chatroom/hook");
 
 export function chatMessageHook() {
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<ChatRoomMessage[]>([]);
-  const [sending, setSending] = useState(false);
+  const { input, setInput, messages, setMessages, sending, setSending } =
+    useChatStore();
 
   // 同步一次性请求（保留备用）
   const sendNormal = async () => {
@@ -44,19 +43,18 @@ export function chatMessageHook() {
           items.map((msg) =>
             msg.id === assistantMsgId
               ? { ...msg, text: data.answer_content }
-              : msg
-          )
+              : msg,
+          ),
         );
       }
     } catch (e) {
       log.error("sendNormal failed", e);
-      const errMsg = e instanceof Error ? e.message : "消息发送失败，请稍后重试";
+      const errMsg =
+        e instanceof Error ? e.message : "消息发送失败，请稍后重试";
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === assistantMsgId
-            ? { ...msg, text: `${errMsg}` }
-            : msg
-        )
+          msg.id === assistantMsgId ? { ...msg, text: `${errMsg}` } : msg,
+        ),
       );
     } finally {
       setSending(false);
@@ -107,7 +105,7 @@ export function chatMessageHook() {
                 return { ...msg, text: msg.text + delta };
               }
               return msg;
-            })
+            }),
           );
         } else if (payload.event === "done") {
           streamFinished = true;
@@ -118,20 +116,19 @@ export function chatMessageHook() {
             prev.map((msg) =>
               msg.id === assistantMsgId
                 ? { ...msg, text: `请求异常：${errData.error_msg}` }
-                : msg
-            )
+                : msg,
+            ),
           );
         }
       });
     } catch (e) {
       log.error("sendStream failed", e);
-      const errMsg = e instanceof Error ? e.message : "消息发送失败，请稍后重试";
+      const errMsg =
+        e instanceof Error ? e.message : "消息发送失败，请稍后重试";
       setMessages((prev) =>
         prev.map((msg) =>
-          msg.id === assistantMsgId
-            ? { ...msg, text: `${errMsg}` }
-            : msg
-        )
+          msg.id === assistantMsgId ? { ...msg, text: `${errMsg}` } : msg,
+        ),
       );
     } finally {
       log.debug("sendStream finished", { streamFinished });

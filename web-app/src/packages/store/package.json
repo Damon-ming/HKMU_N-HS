@@ -1,0 +1,16 @@
+{
+  "name": "@ming/store",
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./app-store": "./src/app-store.ts",
+    "./biz/chat-store": "./src/biz/chat-store.ts"
+  },
+  "dependencies": {
+    "zustand": "^5.0.3"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  }
+}

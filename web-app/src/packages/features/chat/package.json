@@ -6,6 +6,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@ming/store": "workspace:*",
     "@ming/features-chat-drawer": "workspace:*",
     "@ming/features-chat-chatroom": "workspace:*"
   },

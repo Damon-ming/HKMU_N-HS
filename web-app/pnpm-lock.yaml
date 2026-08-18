@@ -8,9 +8,6 @@ importers:
 
   .:
     devDependencies:
-      '@ming/features-upload':
-        specifier: workspace:*
-        version: link:src/packages/features/upload
       '@types/react':
         specifier: ^19.2.18
         version: 19.2.18
@@ -112,6 +109,9 @@ importers:
       '@ming/features-chat-drawer':
         specifier: workspace:*
         version: link:../chat-drawer
+      '@ming/store':
+        specifier: workspace:*
+        version: link:../../store
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -133,6 +133,9 @@ importers:
       '@ming/features-upload-api':
         specifier: workspace:*
         version: link:../upload-api
+      '@ming/store':
+        specifier: workspace:*
+        version: link:../../store
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -198,6 +201,15 @@ importers:
       '@ming/features-upload':
         specifier: workspace:*
         version: link:../upload
+
+  src/packages/store:
+    dependencies:
+      react:
+        specifier: '>=18.0.0'
+        version: 18.3.1
+      zustand:
+        specifier: ^5.0.3
+        version: 5.0.15(@types/react@19.2.18)(react@18.3.1)
 
 packages:
 
@@ -1125,6 +1137,24 @@ packages:
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
+
+  zustand@5.0.15:
+    resolution: {integrity: sha512-MpSEjRiBkA9crSYeOUH32rJC7SVqAbm0Fqcqge/bUi2PPoLcBWKOsG+C8mevmpr8TwXHBVkChbbJiyvkE+i/3A==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -2150,5 +2180,10 @@ snapshots:
       fsevents: 2.3.3
 
   yallist@3.1.1: {}
+
+  zustand@5.0.15(@types/react@19.2.18)(react@18.3.1):
+    optionalDependencies:
+      '@types/react': 19.2.18
+      react: 18.3.1
 
   zwitch@2.0.4: {}

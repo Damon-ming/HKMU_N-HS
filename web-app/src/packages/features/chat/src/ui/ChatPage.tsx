@@ -1,18 +1,21 @@
-import React, { useState } from "react";
+import React from "react";
+import { useChatStore } from "@ming/store/biz/chat-store";
 import { ChatDrawer } from "@ming/features-chat-drawer";
 import { ChatChatroom } from "@ming/features-chat-chatroom";
 
 export const ChatPage: React.FC = () => {
-  const [drawerOpen, setDrawerOpen] = useState(true);
-  const [chatKey, setChatKey] = useState(0);
+  const drawerOpen = useChatStore((state) => state.drawerOpen);
+  const chatSessionId = useChatStore((state) => state.sessionId);
+  const toggleDrawer = useChatStore((state) => state.toggleDrawer);
+  const clearChat = useChatStore((state) => state.resetSession);
   return (
     <div className="feature-chat-page">
       <ChatDrawer
         open={drawerOpen}
-        onToggle={() => setDrawerOpen((value) => !value)}
-        onNewChat={() => setChatKey((value) => value + 1)}
+        onToggle={toggleDrawer}
+        onNewChat={clearChat}
       />
-      <ChatChatroom key={chatKey} />
+      <ChatChatroom key={chatSessionId} />
       <style>{styles}</style>
       <style>{motionStyles}</style>
     </div>
