@@ -1,5 +1,5 @@
 import React from "react";
-import { useChatUiStore, useChatUploadStore } from "@ming/store/biz/chat-state";
+import { useChatUiStore, useChatUploadStore, useChatMessageStore } from "@ming/store/biz/chat-state";
 import { ChatDrawer } from "@ming/features-chat-drawer";
 import { ChatChatroom } from "@ming/features-chat-chatroom";
 
@@ -7,9 +7,14 @@ export const ChatPage: React.FC = () => {
   const drawerOpen = useChatUiStore((state) => state.drawerOpen);
   const chatSessionId = useChatUiStore((state) => state.sessionId);
   const toggleDrawer = useChatUiStore((state) => state.toggleDrawer);
-  const clearChat = useChatUiStore((state) => state.resetSession);
+  const resetSession = useChatUiStore((state) => state.resetSession);
+  const resetMessages = useChatMessageStore((state) => state.resetMessages);
   const upload = useChatUploadStore((state) => state.upload);
   const closeUpload = useChatUploadStore((state) => state.closeUpload);
+  const clearChat = () => {
+    resetSession();
+    resetMessages();
+  };
   return (
     <div className="feature-chat-page">
       <ChatDrawer
@@ -25,12 +30,24 @@ export const ChatPage: React.FC = () => {
             <h2 id="upload-title">{upload.status === "uploading" ? "正在上传文件" : upload.status === "success" ? "上传完成" : "上传失败"}</h2>
             <p>{upload.message}</p>
             {upload.fileNames.length > 0 && <small>{upload.fileNames.join("、")}</small>}
+            {upload.files.length > 0 && (
+              <div className="feature-upload-results">
+                {upload.files.map((file) => (
+                  <div className="feature-upload-result" key={file.file_md5}>
+                    <span>{file.indexed || file.duplicate ? "✓" : "◌"}</span>
+                    <strong>{file.filename}</strong>
+                    <em>{file.duplicate ? "已存在" : file.indexed ? "已入语料库" : "更新中"}</em>
+                  </div>
+                ))}
+              </div>
+            )}
             {upload.status !== "uploading" && <button type="button" onClick={closeUpload}>知道了</button>}
           </section>
         </div>
       )}
       <style>{styles}</style>
       <style>{motionStyles}</style>
+      <style>{uploadResultStyles}</style>
     </div>
   );
 };
@@ -60,3 +77,5 @@ const motionStyles = `
 @keyframes feature-page-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}@keyframes feature-drawer-in{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}@keyframes feature-drawer-content-in{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}@keyframes feature-text-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes feature-message-in{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}@keyframes feature-glow{0%,100%{box-shadow:0 10px 24px rgba(88,101,242,.25)}50%{box-shadow:0 14px 34px rgba(139,92,246,.42)}}@keyframes feature-float{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(0,16px,0)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 `;
+
+const uploadResultStyles = `.feature-upload-results{max-height:150px;margin-top:16px;padding:8px;border:1px solid #edf0f7;border-radius:13px;background:#fafbff;text-align:left;overflow:auto}.feature-upload-result{display:flex;align-items:center;gap:8px;padding:8px 6px;font-size:12px;color:#667085}.feature-upload-result span{color:#16a05d;font-size:15px}.feature-upload-result strong{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#344054;font-weight:600}.feature-upload-result em{font-style:normal;color:#7c86d9;white-space:nowrap}`;

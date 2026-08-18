@@ -46,6 +46,7 @@ class UploadService:
         for file in file_list:
             origin_name = Path(file.filename or "unnamed").name
             content = await file.read()
+            logger.info("收到用户上传文件 | original_filename=%s | size=%s", origin_name, len(content))
             prepared_files.append((file, origin_name, content))
 
         for file, origin_name, content in prepared_files:

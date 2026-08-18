@@ -12,7 +12,10 @@ export async function uploadFile(request: UploadRequest): Promise<BizApiResponse
   const formData = new FormData()
   request.files.forEach(file => formData.append('files', file, file.name))
   try {
-    const response = await dataApi.post<UploadResponse>('/api/files/upload/v1', formData)
+    // PDF 解析、Embedding 和向量入库可能持续几十秒，不能使用普通接口的 10s 超时。
+    const response = await dataApi.post<UploadResponse>('/api/files/upload/v1', formData, {
+      timeout: 1 * 60 * 1000,
+    })
     log.debug('upload response received')
     return response
   } catch (error) {

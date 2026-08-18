@@ -33,9 +33,17 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
     startUpload(files.map((file) => file.name));
     try {
       const response = await useUploadApi(files);
-      finishUpload("success", response.data ? "文件已经进入语料库" : "文件上传成功");
+      // dataApi 已将服务端成功响应解包为 { bizCode, data }。
+      // 只要业务码是成功码，就不能因为展示字段缺失而误报上传失败。
+      if (response.bizCode >= 40000) {
+        throw new Error("服务端返回上传失败");
+      }
+      const resultFiles = Array.isArray(response.data?.files) ? response.data.files : [];
+      const allIndexed = resultFiles.length === 0 || resultFiles.every((file) => file.indexed || file.duplicate);
+      finishUpload("success", allIndexed ? "文件已经进入语料库" : "文件已上传，部分词条仍在更新", resultFiles);
     } catch (e) {
-      finishUpload("error", e instanceof Error ? e.message : "文件上传失败");
+      const error = e as { errData?: { error_msg?: string }; clientErrData?: { message?: string } };
+      finishUpload("error", error.errData?.error_msg ?? error.clientErrData?.message ?? (e instanceof Error ? e.message : "文件上传失败"));
     }
   };
   return (

@@ -95,7 +95,7 @@ async def stream_chat_generator(request: ChatRequest):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": request.query}
         ]
-        logger.debug("prompt_messages:\n", prompt_messages)
+        logger.debug("prompt_messages:\n%s", prompt_messages)
         async for token in infer_service.stream_generate(
             model_name=llm_model_name,
             messages=prompt_messages

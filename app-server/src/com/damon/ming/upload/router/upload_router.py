@@ -15,7 +15,7 @@ async def save_files(
     files: list[UploadFile] = File(..., description="多文件"),
     meta_json: str = Form("", description="额外业务参数，JSON字符串")
 ):
-    logger.info("文件上传请求开始 | file_count=%s", len(files))
+    logger.info("文件上传请求开始 | file_count=%s | filenames=%s", len(files), [file.filename for file in files])
     try:
         # 解析业务参数
         req_data = FileUploadRequest(**json.loads(meta_json)) if meta_json else FileUploadRequest()
