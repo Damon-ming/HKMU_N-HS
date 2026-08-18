@@ -49,6 +49,9 @@ class ChromaDBStore(BaseVectorStore):
             # 本地持久化模式
             self.client = chromadb.PersistentClient(
                 path=persist_directory,
+                # 关闭匿名遥测数据上报
+                # 作用：禁止 ChromaDB 收集和发送匿名使用数据
+                # 默认值：True（允许上报）
                 settings=Settings(anonymized_telemetry=False)
             )
             self.logger.info(f"[ChromaDBStore] 初始化本地持久化: {persist_directory}")
@@ -150,6 +153,7 @@ class ChromaDBStore(BaseVectorStore):
                 return []
             
             nodes = []
+            # ChromaDB 默认使用 duckdb+parquet
             for i, node_id in enumerate(results['ids'][0]):
                 node = TextNode(
                     id_=node_id,

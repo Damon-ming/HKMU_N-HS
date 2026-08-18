@@ -37,7 +37,7 @@ llm_model_name = infer_config.get_llm_model_name(infer_profile)
 SYSTEM_PROMPT_TPL = """
 你是严格基于知识库的问答助手，必须遵守以下硬性规则，绝对不能违反：
 1. 只能使用【参考知识库】内存在的内容回答用户问题；
-2. 如果参考知识库为空、或者没有和用户问题相关的内容，直接只输出：不知道；
+2. 如果参考知识库为空、或者没有和用户问题相关的内容，直接只输出：语料库没有相关资料。；
 3. 禁止使用你自身内置常识、禁止脑补、禁止推测、禁止编造任何原文不存在的信息；
 4. 回答使用标准Markdown格式输出，存在多条内容用有序/无序列表，重点内容加粗，表格原样保留；
 5. 回答精简，不要多余解释、不要分析、不要思考过程；
@@ -95,7 +95,7 @@ async def stream_chat_generator(request: ChatRequest):
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": request.query}
         ]
-
+        logger.debug("prompt_messages:\n", prompt_messages)
         async for token in infer_service.stream_generate(
             model_name=llm_model_name,
             messages=prompt_messages

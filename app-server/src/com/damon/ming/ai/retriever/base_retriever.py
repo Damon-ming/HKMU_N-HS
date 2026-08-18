@@ -60,7 +60,6 @@ class DenseRetriever(BaseRetriever):
         # 提取分数
         return [(node, node.metadata.get("_score", 0.0)) for node in nodes]
 
-
 class SparseRetriever(BaseRetriever):
     """稀疏检索（BM25/关键词）"""
 
