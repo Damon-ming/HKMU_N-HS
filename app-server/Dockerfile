@@ -18,4 +18,4 @@ COPY . .
 # ENV OLLAMA_BASE_URL=http://ollama-server:11434
 
 # 启动入口，根据你项目实际启动文件修改
-CMD ["python3", "-m", "src.com.damon.ming.main"]
+# CMD ["python3", "-m", "src.com.damon.ming.main"]
