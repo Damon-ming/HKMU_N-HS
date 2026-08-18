@@ -1,7 +1,7 @@
 # app-server/src/com/damon/ming/chat/router/chat_router.py
 from fastapi import APIRouter
 from src.com.damon.ming.chat.schemas.bean import ChatRequest
-from src.com.damon.ming.ai.rag_tool import RAGContainer
+from src.com.damon.ming.ai.rag_tool import get_rag_container
 from src.com.damon.ming.ai.registry.inference_registry import register_all_inferences
 from src.com.damon.ming.ai.inference.config import InferenceConfig
 from src.com.damon.ming.ai.intent.intention_config import IntentionConfig
@@ -17,7 +17,7 @@ logger = pin("chat.router")
 router = APIRouter(prefix="/api/llm", tags=["聊天模块"])
 
 # 全局单例初始化
-rag_app = RAGContainer()
+rag_app = get_rag_container()
 register_all_inferences()
 
 # 推理客户端全局初始化

@@ -7,11 +7,15 @@ export interface UploadFile {
 }
 
 export interface UploadResponse {
-  id: string
-  url: string
-  name: string
-  size: number
-  type: string
+  server_time: string
+  files: Array<{
+    filename: string
+    save_path: string
+    file_size: number
+    file_md5: string
+    duplicate: boolean
+    indexed: boolean
+  }>
 }
 
 import type { BaseRequest } from '@ming/biz-common-net-api'

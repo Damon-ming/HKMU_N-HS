@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from typing import List
+import threading
 from llama_index.core import Document
 from src.com.damon.ming.ai.registry.db_registry import register_all_vector_dbs
 from src.com.damon.ming.ai.registry.embedding_registry import register_all_embeddings
@@ -28,6 +29,17 @@ from src.com.damon.ming.log import pin
 logger = pin("ai.rag")
 
 KNOWLEDGES_DIR = Path(__file__).resolve().parent.parent / "knowledges"
+_rag_instance = None
+_rag_instance_lock = threading.Lock()
+
+def get_rag_container():
+    """进程级单例，上传和聊天共用同一个向量库/BM25实例。"""
+    global _rag_instance
+    if _rag_instance is None:
+        with _rag_instance_lock:
+            if _rag_instance is None:
+                _rag_instance = RAGContainer()
+    return _rag_instance
 
 # 1. 全局单例容器
 class RAGContainer:
@@ -70,6 +82,7 @@ class RAGContainer:
 
         # 步骤7：初始化稀疏BM25索引（启动时预加载所有节点构建）
         self.bm25_index = BM25Index()
+        self._knowledge_lock = threading.RLock()
         self.sparse_retriever = SparseRetriever(bm25_index=self.bm25_index)
 
         # 步骤8：混合检索器（稠密+稀疏RRF融合）
@@ -90,29 +103,30 @@ class RAGContainer:
 
         # 首次启动自动建立随项目发布的知识库，已有持久化数据时不重复写入。
         # 检查向量数据库中是否没有任何数据
-        if self.vector_store.count() == 0:
-            self.load_pdf_knowledge()
-        else:
-            # Chroma 持久化了向量，但 BM25 是内存索引，重启后必须恢复。
-            docs = LocalPDFDataSource(KNOWLEDGES_DIR).load_documents()
-            bm25_nodes = []
-            bm25_nodes.extend(self.splitter.split(docs))
+        # 向量库负责持久化；BM25 是内存索引，服务每次启动只恢复 BM25。
+        # 向量入库统一走 ingest_files，避免启动时重复 add_documents。
+        docs = LocalPDFDataSource(KNOWLEDGES_DIR).load_documents()
+        bm25_nodes = self.splitter.split(docs)
+        
+        if bm25_nodes:
             self.bm25_index.build(bm25_nodes)
+            
+        if self.vector_store.count() == 0 and bm25_nodes:
+            self._index_nodes(bm25_nodes, rebuild_bm25=False)
+        elif self.vector_store.count() > 0:
+            # 服务异常退出或人工拷贝了新 PDF 时，启动阶段补齐缺失向量；
+            # ingest_files 会按 file_md5 跳过已经入库的文件。
+            
+            pdf_paths = [str(path.resolve()) for path in KNOWLEDGES_DIR.rglob("*.pdf")]
+            if pdf_paths:
+                self.ingest_files(pdf_paths)
             
         logger.info("RAG 容器初始化完成")
 
-    # 增量更新场景会丢失历史文档,需要增量逻辑
-    def load_pdf_knowledge(self, folder_path: str = None) -> List[str]:
-        if folder_path is None:
-            folder_path = KNOWLEDGES_DIR
-            
-        pdf_ds = LocalPDFDataSource(folder_path=folder_path)
-        docs: List[Document] = pdf_ds.load_documents()
-        all_nodes = []
-        # 正确调用切块器split方法，自动生成标准section_id/section_seq
-        chunks = self.splitter.split(docs)
-        all_nodes.extend(chunks)
-
+    def _index_nodes(self, all_nodes, rebuild_bm25: bool = True) -> List[str]:
+        """向量入库的唯一入口；调用方应确保节点已按 file_md5 去重。"""
+        if not all_nodes:
+            return []
         # 批量向量化
         texts = [n.text for n in all_nodes]
         embeddings = self.embedder.embed_documents(texts)
@@ -122,8 +136,44 @@ class RAGContainer:
         # 写入向量库
         node_ids = self.vector_store.add_documents(all_nodes)
         # 刷新BM25
-        self.bm25_index.build(all_nodes)
+        if rebuild_bm25:
+            self.bm25_index.build(all_nodes)
         return node_ids
+
+    def ingest_files(self, file_paths: List[str]) -> dict:
+        """增量处理上传文件，按 file_md5 保证本地文件和索引幂等。"""
+        with self._knowledge_lock:
+            accepted = []
+            skipped = []
+            # 只初始化一次数据源，不要循环内反复创建
+            source_root = LocalPDFDataSource(KNOWLEDGES_DIR)
+            all_docs = source_root.load_documents()
+            
+            for file_path in file_paths:
+                p = Path(file_path).resolve()
+                
+                docs = [d for d in all_docs if d.metadata.get("file_path") == str(p)]
+                if not docs:
+                    raise ValueError(f"无法解析PDF文件: {p.name}")
+
+                file_md5 = docs[0].metadata.get("file_md5")
+                existing = self.vector_store.get_by_metadata({"file_md5": file_md5})
+                if existing:
+                    skipped.append({"file_md5": file_md5, "reason": "already_indexed"})
+                    continue
+
+                nodes = self.splitter.split(docs)
+                # 新增节点，触发内部build BM25
+                self._index_nodes(nodes, rebuild_bm25=False)
+                accepted.append({"file_md5": file_md5, "chunks": len(nodes)})
+
+            # 全部处理完成，从磁盘全量重建BM25，保证完整
+            all_docs = source_root.load_documents()
+            all_nodes = self.splitter.split(all_docs)
+            if all_nodes:
+                self.bm25_index.build(all_nodes)
+                
+            return {"indexed": accepted, "skipped": skipped}
 
     async def query_rag(self, query: str, top_k: int = 5, max_context_tokens: int = 4096):
         logger.info("RAG 检索开始 | query_length=%s | top_k=%s", len(query), top_k)
