@@ -181,25 +181,42 @@ class RAGContainer:
         raw_nodes = self.hybrid_retriever.retrieve(
             query=query,
             top_k=top_k,
-            dense_top_k=30,
-            sparse_top_k=30
+            dense_top_k=10,
+            sparse_top_k=10
         )
         if not raw_nodes:
             logger.info("RAG 检索无结果")
             return ""
-
+        
+        # 3. 重构完整章节上下文（所有逻辑已封装到 SectionReconstructor）
+        reconstructed_nodes = self.section_recon.reconstruct_sections_to_nodes(
+            vector_store=self.vector_store,
+            hit_nodes=raw_nodes,
+        )
+        
         # 2. CrossEncoder 重排过滤低相关文档
-        rerank_nodes = self.reranker.rerank(query=query, nodes=raw_nodes, top_k=top_k)
+        rerank_nodes = self.reranker.rerank(query=query, nodes=reconstructed_nodes, top_k=top_k)
         if not rerank_nodes:
             logger.info("RAG 重排后无有效结果")
             return ""
 
-        # 3. 重构完整章节上下文（所有逻辑已封装到 SectionReconstructor）
-        final_context = self.section_recon.reconstruct_sections_from_nodes(
-            vector_store=self.vector_store,
-            hit_nodes=rerank_nodes,
-            max_context_tokens=max_context_tokens
-        )
+        final_text = self.section_recon.merge_nodes_to_single_text(nodes = rerank_nodes , max_context_tokens =max_context_tokens)
+        
+        # # 2. CrossEncoder 重排过滤低相关文档
+        # rerank_nodes = self.reranker.rerank(query=query, nodes=raw_nodes, top_k=top_k)
+        # if not rerank_nodes:
+        #     logger.info("RAG 重排后无有效结果")
+        #     return ""
 
-        logger.info("RAG 检索完成 | context_length=%s", len(final_context))
-        return final_context
+        # # 3. 重构完整章节上下文（所有逻辑已封装到 SectionReconstructor）
+        # final_context = self.section_recon.reconstruct_sections_to_text(
+        #     vector_store=self.vector_store,
+        #     hit_nodes=rerank_nodes,
+        #     max_context_tokens=max_context_tokens
+        # )
+
+        # logger.info("RAG 检索完成 | context_length=%s", len(final_context))
+        # return final_context
+        
+        logger.info("RAG 检索完成 | context_length=%s", len(final_text))
+        return final_text

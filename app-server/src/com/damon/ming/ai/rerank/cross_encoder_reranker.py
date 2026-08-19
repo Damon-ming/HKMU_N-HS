@@ -23,6 +23,7 @@ class CrossEncoderModel:
 
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.logger.info(f"device: {device}")
         self.device = torch.device(device)
         self.max_seq_len = max_seq_len
         self.batch_size = batch_size

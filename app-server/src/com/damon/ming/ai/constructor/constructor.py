@@ -65,7 +65,7 @@ class SectionReconstructor:
             return text
         return self.tokenizer.decode(tokens[:max_tokens])
     
-    def reconstruct_sections_from_nodes(
+    def reconstruct_sections_to_text(
         self,
         vector_store: BaseVectorStore,
         hit_nodes: List[TextNode],
@@ -85,13 +85,13 @@ class SectionReconstructor:
             重构后的上下文文本
         """
         if not hit_nodes:
-            logger.warning("reconstruct_sections_from_nodes | hit_nodes 为空")
+            logger.warning("reconstruct_sections_to_text | hit_nodes 为空")
             return ""
         
         # 收集所有唯一 (file_md5, section_id) 章节对
         section_keys = self._extract_section_keys(hit_nodes)
         if not section_keys:
-            logger.warning("reconstruct_sections_from_nodes | 未提取到有效的章节键")
+            logger.warning("reconstruct_sections_to_text | 未提取到有效的章节键")
             return ""
         
         # 批量获取所有章节的完整分片
@@ -185,3 +185,123 @@ class SectionReconstructor:
                 contexts.append(full_section)
         
         return contexts
+
+    def reconstruct_sections_to_nodes(
+        self,
+        vector_store: BaseVectorStore,
+        hit_nodes: List[TextNode],
+    ) -> List[TextNode]:
+        """
+        从召回节点，拉取完整章节分片，每个section_id合并成单个TextNode；
+        章节文本token超过阈值则执行summary，返回List[TextNode]
+        """
+        if not hit_nodes:
+            logger.warning("reconstruct_sections_to_nodes | hit_nodes 为空")
+            return []
+
+        # 收集所有唯一 (file_md5, section_id) 章节对
+        section_keys = self._extract_section_keys(hit_nodes)
+        if not section_keys:
+            logger.warning("reconstruct_sections_to_nodes | 未提取到有效的章节键")
+            return []
+
+        # 批量获取所有章节的完整分片
+        all_section_nodes = self._fetch_all_section_chunks(vector_store, section_keys)
+
+        # 按章节分组
+        group_map = self._group_chunks_by_section(all_section_nodes)
+
+        # 1、先把每个section分片合并为完整章节Node（无摘要）
+        full_nodes = self._build_section_nodes(group_map, section_keys)
+
+        # 2、对合并后的章节，超长执行summary
+        for node in full_nodes:
+            token_cnt = self.tokenizer.count_tokens(node.text)
+            if token_cnt > self.section_summary_threshold and self.summarizer:
+                logger.info(f"需要summary | tokens={token_cnt} | threshold={self.section_summary_threshold}")
+                logger.info(f"before:\n{node.text[:500]}...")
+                compressed_text = self.summarizer.summarize(
+                    text=node.text,
+                    max_summary_tokens=self.summary_max_tokens
+                )
+                logger.info(f"after:\n{compressed_text[:500]}...")
+                node.text = compressed_text
+
+        return full_nodes
+
+    def _build_section_nodes(
+        self,
+        group_map: Dict[Tuple[str, str], List[TextNode]],
+        target_keys: Set[Tuple[str, str]]
+    ) -> List[TextNode]:
+        """
+        将同一个section_id下的多个分片chunk，合并成单个TextNode，**不做摘要**
+        返回：每个章节对应一个合并完成的TextNode
+        """
+        from llama_index.core.schema import TextNode
+
+        result_nodes = []
+        for key in target_keys:
+            section_nodes = group_map.get(key, [])
+            if not section_nodes:
+                continue
+            # 按section_seq排序，拼接完整章节文本
+            full_section = self._merge_chunks(section_nodes)
+            if not full_section:
+                continue
+
+            first_node = section_nodes[0]
+            merged_node = TextNode(
+                text=full_section,
+                metadata=first_node.metadata.copy(),
+            )
+            result_nodes.append(merged_node)
+        return result_nodes
+    
+    def merge_nodes_to_single_text(
+        self,
+        nodes: List[TextNode],
+        max_context_tokens: int,
+        section_separator: str = "\n---\n"
+    ) -> str:
+        """
+        将多个TextNode文本拼接为单个完整文本；
+        如果整体token超过max_context_tokens，执行全局摘要压缩至目标token。
+
+        Args:
+            nodes: 已经按章节合并完成的节点列表（来自 reconstruct_sections_to_nodes）
+            max_context_tokens: 全局最大token上限，超过则整体summary
+            section_separator: 章节之间的分隔符
+
+        Returns:
+            最终的上下文字符串
+        """
+        if not nodes:
+            return ""
+
+        # 1. 拼接全部章节
+        parts = [n.text for n in nodes]
+        full_text = section_separator.join(parts)
+
+        # 2. 统计总token
+        total_tokens = self.tokenizer.count_tokens(full_text)
+        logger.info(f"merge_nodes_to_single_text | total_tokens={total_tokens}, max={max_context_tokens}")
+
+        # 没超限直接返回原文
+        if total_tokens <= max_context_tokens:
+            return full_text
+
+        # 超限：有摘要器则全局摘要；没有就硬截断
+        if self.summarizer is not None:
+            logger.info(f"全局触发summary，总tokens={total_tokens}，压缩到 {max_context_tokens}")
+            logger.info(f"global summary before: {full_text[:600]}...")
+            compressed = self.summarizer.summarize(
+                text=full_text,
+                max_summary_tokens=max_context_tokens
+            )
+            logger.info(f"global summary after: {compressed[:600]}...")
+            return compressed
+        else:
+            # 无摘要器兜底：按token截断
+            logger.warning("merge_nodes_to_single_text 无summarizer，执行硬token截断")
+            return self.truncate_by_token(full_text, max_context_tokens)

@@ -75,7 +75,11 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
                       whiteSpace: "normal",
                     }}
                   >
-                    {message.role === "assistant" ? (
+                    {message.text === "正在思考中..." ? (
+                      <span className="feature-thinking" aria-label="正在思考中">
+                        正在思考中<span className="feature-thinking-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span>
+                      </span>
+                    ) : message.role === "assistant" ? (
                       <ReactMarkdown>{message.text}</ReactMarkdown>
                     ) : (
                       <span className="whitespace-pre-wrap">{message.text}</span>
@@ -107,6 +111,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
           ↓
         </button>
       )}
+      <style>{thinkingStyles}</style>
       <section className="feature-composer-area">
         {messages.length === 0 && (
           <section className="feature-welcome">
@@ -139,3 +144,11 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
     </main>
   );
 };
+
+const thinkingStyles = `
+.feature-thinking-dots{display:inline-flex;min-width:1.2em;text-align:left}
+.feature-thinking-dots i{font-style:normal;opacity:0;animation:feature-thinking-dot 1.2s steps(1,end) infinite}
+.feature-thinking-dots i:nth-child(2){animation-delay:.4s}
+.feature-thinking-dots i:nth-child(3){animation-delay:.8s}
+@keyframes feature-thinking-dot{0%,25%{opacity:0}26%,50%{opacity:1}51%,100%{opacity:0}}
+`;
