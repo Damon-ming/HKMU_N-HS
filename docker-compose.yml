@@ -38,6 +38,7 @@ services:
     environment:
       # 告诉后端代码通过容器名访问内部 Ollama
       - OLLAMA_BASE_URL=http://ollama-server:11434
+      - LOG_LEVEL=DEBUG
     depends_on:
       - ollama
         # condition: service_healthy

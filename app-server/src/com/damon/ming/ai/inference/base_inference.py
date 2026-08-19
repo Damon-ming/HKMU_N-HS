@@ -32,6 +32,10 @@ class BaseInferenceService(ABC):
         """检测模型是否存在/服务就绪"""
         pass
 
+    async def warmup(self, model_name: str) -> None:
+        """可选模型预热钩子。"""
+        return None
+
     @abstractmethod
     def get_model_info(self) -> Dict[str, Any]:
         """监控、日志模型信息"""

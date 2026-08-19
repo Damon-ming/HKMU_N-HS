@@ -1,6 +1,6 @@
 # app-server/src/com/damon/ming/ai/inference/ollama_inference.py
 import json
-import time
+import asyncio
 import ollama
 from typing import List, Dict, Any, Optional, AsyncGenerator
 from src.com.damon.ming.log import pin
@@ -58,7 +58,7 @@ class OllamaInference(BaseInferenceService):
                 err_msg = f"Ollama调用异常: {str(e)}"
                 wait = 2 ** attempt
                 logger.warning(f"推理重试 {attempt+1}/{self.max_retries}, wait {wait}s | {err_msg}")
-                time.sleep(wait)
+                await asyncio.sleep(wait)
 
         logger.error(f"Ollama推理全部重试失败: {err_msg}")
         # 结构化兜底返回
@@ -84,12 +84,26 @@ class OllamaInference(BaseInferenceService):
             model=model_name,
             messages=messages,
             options=run_opts,
-            stream=True
+            stream=True,
+            # 用于控制模型在内存中保持加载状态的时间
+            keep_alive="30m",
         )
         async for chunk in stream:
             content = chunk["message"].get("content", "")
             if content:
                 yield content
+
+    async def warmup(self, model_name: str) -> None:
+        try:
+            await self.client.chat(
+                model=model_name,
+                messages=[{"role": "user", "content": "ping"}],
+                options={"num_predict": 1, **self.default_options},
+                keep_alive="30m",
+            )
+            logger.info("Ollama模型预热完成 | model=%s | keep_alive=30m", model_name)
+        except Exception:
+            logger.exception("Ollama模型预热失败 | model=%s", model_name)
 
     async def check_model_ready(self, model_name: str) -> bool:
         try:

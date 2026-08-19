@@ -66,9 +66,9 @@ class RAGContainer:
         # 新增：轻量文本摘要器
         self.summary_config = SummarizerConfig()
         self.summarizer: BaseSummarizer = self.summary_config.create_summarizer(profile="default")
-        
+ 
         # 步骤4：初始化章节重构工具（用于召回后合并完整章节）
-        self.section_recon = SectionReconstructor(tokenizer=self.tokenizer)
+        self.section_recon = SectionReconstructor(tokenizer = self.tokenizer, summarizer=self.summarizer)
 
         # 步骤5：初始化重排器 cross-encoder
         self.rerank_config = RerankerConfig()

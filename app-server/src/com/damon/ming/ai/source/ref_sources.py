@@ -68,7 +68,7 @@ class LocalPDFDataSource(BaseDataSource):
                 file_path,
                 page_chunks=True,
                 write_images=self.enable_image_extract,
-                dpi=150
+                dpi=150,
             )
             
             total_page_count = len(md_pages)

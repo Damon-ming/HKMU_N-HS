@@ -4,7 +4,9 @@ from llama_index.core.schema import TextNode
 from src.com.damon.ming.ai.tokenizer.base_tokenizer import BaseTokenizer
 from src.com.damon.ming.ai.summary import BaseSummarizer
 from src.com.damon.ming.ai.vector_db.base_vector_db import BaseVectorStore
+from src.com.damon.ming.log import pin
 
+logger = pin("SectionReconstructor")
 
 class SectionReconstructor:
     def __init__(self, tokenizer: BaseTokenizer, summarizer: Optional[BaseSummarizer] = None):
@@ -52,6 +54,7 @@ class SectionReconstructor:
     def _merge_chunks(self, section_chunks: List[TextNode]) -> Optional[str]:
         if not section_chunks:
             return None
+        
         section_chunks.sort(key=lambda x: x.metadata.get("section_seq", 0))
         return "\n".join([node.text for node in section_chunks])
     
@@ -82,11 +85,13 @@ class SectionReconstructor:
             重构后的上下文文本
         """
         if not hit_nodes:
+            logger.warning("reconstruct_sections_from_nodes | hit_nodes 为空")
             return ""
         
         # 收集所有唯一 (file_md5, section_id) 章节对
         section_keys = self._extract_section_keys(hit_nodes)
         if not section_keys:
+            logger.warning("reconstruct_sections_from_nodes | 未提取到有效的章节键")
             return ""
         
         # 批量获取所有章节的完整分片
@@ -168,10 +173,13 @@ class SectionReconstructor:
             # 检查是否需要摘要
             token_cnt = self.tokenizer.count_tokens(full_section)
             if token_cnt > self.section_summary_threshold and self.summarizer:
+                logger.info(f"需要summary | tokens={token_cnt} | threshold={self.section_summary_threshold}")
+                logger.info(f"before:\n{full_section[:500]}...")  # 只打印前500字符，避免日志太大
                 compressed_text = self.summarizer.summarize(
                     text=full_section,
                     max_summary_tokens=self.summary_max_tokens
                 )
+                logger.info(f"after:\n{compressed_text[:500]}...")
                 contexts.append(compressed_text)
             else:
                 contexts.append(full_section)

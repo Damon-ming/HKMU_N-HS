@@ -1,5 +1,4 @@
 # app-server/src/com/damon/ming/main.py
-# python com/damon/ming/main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -30,6 +29,10 @@ app.add_middleware(
 app.include_router(upload_router.router)
 app.include_router(chat_router.router)
 logger.info("应用路由初始化完成")
+
+@app.on_event("startup")
+async def warmup_inference_model():
+    logger.info("startup event")
 
 if __name__ == "__main__":
     logger.info("启动 FastAPI 服务 | host=0.0.0.0 | port=8000")
