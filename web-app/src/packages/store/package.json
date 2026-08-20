@@ -5,10 +5,14 @@
   "exports": {
     ".": "./src/index.ts",
     "./app-store": "./src/app-store.ts",
-    "./biz/chat-state": "./src/biz/chat-state.ts"
+    "./biz/chat-state": "./src/biz/chat-state.ts",
+    "./biz/search-state": "./src/biz/search-state.ts",
+    "./biz/history-state": "./src/biz/history-state.ts",
+    "./biz/account-state": "./src/biz/account-state.ts"
   },
   "dependencies": {
-    "zustand": "^5.0.3"
+    "zustand": "^5.0.3",
+    "@ming/features-account-api": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18.0.0"

@@ -1,2 +1,2 @@
-export * from './types'
-export * from './api'
+export { getHistoryList, addHistory, removeHistory, getHistoryMessages, saveHistoryMessages } from "./api/history-api.api"
+export { useHistory } from "./api/history-api.api"

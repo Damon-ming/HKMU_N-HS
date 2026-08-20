@@ -1,28 +1,32 @@
-import React from "react";
-import { useChatUiStore, useChatUploadStore, useChatMessageStore } from "@ming/store/biz/chat-state";
 import { ChatDrawer } from "@ming/features-chat-drawer";
 import { ChatChatroom } from "@ming/features-chat-chatroom";
+import React from "react";
+import { useChatPageHook } from "../hook";
 
 export const ChatPage: React.FC = () => {
-  const drawerOpen = useChatUiStore((state) => state.drawerOpen);
-  const chatSessionId = useChatUiStore((state) => state.sessionId);
-  const toggleDrawer = useChatUiStore((state) => state.toggleDrawer);
-  const resetSession = useChatUiStore((state) => state.resetSession);
-  const resetMessages = useChatMessageStore((state) => state.resetMessages);
-  const upload = useChatUploadStore((state) => state.upload);
-  const closeUpload = useChatUploadStore((state) => state.closeUpload);
-  const clearChat = () => {
-    resetSession();
-    resetMessages();
-  };
+  const { drawerOpen, chatSessionId, toggleDrawer, searchOpen, searchKeyword, closeSearch, setSearchKeyword, searchResults, accountOpen, draftName, closeAccount, setDraftName, saveAccount, loadHistory, upload, closeUpload } = useChatPageHook();
   return (
     <div className="feature-chat-page">
-      <ChatDrawer
-        open={drawerOpen}
-        onToggle={toggleDrawer}
-        onNewChat={clearChat}
-      />
+      <ChatDrawer />
       <ChatChatroom key={chatSessionId} />
+      {searchOpen && <div className="feature-search-backdrop" onClick={closeSearch}>
+        <section className="feature-search-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+          <input autoFocus value={searchKeyword} onChange={(event) => setSearchKeyword(event.target.value)} placeholder="搜索历史对话内容..." />
+          <div className="feature-search-results">
+            {searchKeyword.trim() && searchResults.length === 0 && <p>没有找到匹配的对话</p>}
+            {searchResults.map((item) => <button key={item.id} type="button" onClick={() => { loadHistory(item.id); closeSearch(); }}>
+              <strong>{item.title}</strong><small>{item.meta}</small>
+            </button>)}
+          </div>
+        </section>
+      </div>}
+      {accountOpen && <div className="feature-account-backdrop" onClick={closeAccount}>
+        <section className="feature-account-modal" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+          <h2>账户信息</h2><p>信息仅保存在当前浏览器。</p>
+          <label>显示名称<input value={draftName} maxLength={30} autoFocus onChange={(event) => setDraftName(event.target.value)} /></label>
+          <div><button type="button" onClick={closeAccount}>取消</button><button type="button" onClick={saveAccount}>保存</button></div>
+        </section>
+      </div>}
       {upload.status !== "idle" && (
         <div className="feature-upload-modal-backdrop" role="presentation">
           <section className={`feature-upload-modal ${upload.status}`} role="dialog" aria-modal="true" aria-labelledby="upload-title">
@@ -48,6 +52,7 @@ export const ChatPage: React.FC = () => {
       <style>{styles}</style>
       <style>{motionStyles}</style>
       <style>{uploadResultStyles}</style>
+      <style>{activeHistoryStyles}</style>
     </div>
   );
 };
@@ -78,4 +83,5 @@ const motionStyles = `
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 `;
 
-const uploadResultStyles = `.feature-upload-results{max-height:150px;margin-top:16px;padding:8px;border:1px solid #edf0f7;border-radius:13px;background:#fafbff;text-align:left;overflow:auto}.feature-upload-result{display:flex;align-items:center;gap:8px;padding:8px 6px;font-size:12px;color:#667085}.feature-upload-result span{color:#16a05d;font-size:15px}.feature-upload-result strong{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#344054;font-weight:600}.feature-upload-result em{font-style:normal;color:#7c86d9;white-space:nowrap}`;
+const uploadResultStyles = `.feature-upload-results{max-height:150px;margin-top:16px;padding:8px;border:1px solid #edf0f7;border-radius:13px;background:#fafbff;text-align:left;overflow:auto}.feature-upload-result{display:flex;align-items:center;gap:8px;padding:8px 6px;font-size:12px;color:#667085}.feature-upload-result span{color:#16a05d;font-size:15px}.feature-upload-result strong{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#344054;font-weight:600}.feature-upload-result em{font-style:normal;color:#7c86d9;white-space:nowrap}.feature-history-item i{display:none;margin-left:4px;color:#a6aec0;font-style:normal;font-size:16px}.feature-history-item:hover i{display:block}.feature-history-item i:hover{color:#d14343}.feature-user{width:100%;border:0;background:transparent;text-align:left;cursor:pointer}.feature-user small{margin-left:auto;color:#98a2b3;font-size:11px}.feature-account-backdrop,.feature-search-backdrop{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:rgba(19,27,52,.3);backdrop-filter:blur(6px)}.feature-account-modal,.feature-search-modal{width:min(420px,calc(100vw - 32px));padding:26px;border-radius:20px;background:rgba(255,255,255,.94);box-shadow:0 25px 70px rgba(27,38,82,.24)}.feature-account-modal h2{margin:0;color:#1f2940;font-size:20px}.feature-account-modal p{margin:7px 0 20px;color:#98a2b3;font-size:12px}.feature-account-modal label{display:block;color:#667085;font-size:12px;font-weight:600}.feature-account-modal input,.feature-search-modal>input{display:block;width:100%;margin-top:8px;padding:12px;border:1px solid #dfe4ee;border-radius:10px;outline:0;font:inherit;color:#344054;background:rgba(255,255,255,.8)}.feature-account-modal input:focus,.feature-search-modal>input:focus{border-color:#8993ef}.feature-account-modal>div{display:flex;justify-content:flex-end;gap:9px;margin-top:22px}.feature-account-modal button{padding:9px 16px;border:0;border-radius:10px;background:#f0f2f8;color:#667085;cursor:pointer}.feature-account-modal button:last-child{background:linear-gradient(135deg,#5865f2,#7660ed);color:#fff}.feature-search-results{max-height:280px;margin-top:12px;overflow:auto}.feature-search-results button{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border:0;border-radius:11px;background:transparent;text-align:left;color:#344054;cursor:pointer}.feature-search-results button:hover{background:#eef0ff}.feature-search-results strong{min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.feature-search-results small{color:#98a2b3}.feature-search-results p{padding:10px;color:#98a2b3;text-align:center;font-size:13px}`;
+const activeHistoryStyles = `.feature-history-item.is-active{background:#eef0ff;color:#4f46c7;box-shadow:inset 3px 0 0 #5965dc}`;

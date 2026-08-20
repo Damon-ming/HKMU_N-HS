@@ -8,7 +8,10 @@
   "dependencies": {
     "@ming/store": "workspace:*",
     "@ming/features-chat-drawer": "workspace:*",
-    "@ming/features-chat-chatroom": "workspace:*"
+    "@ming/features-chat-chatroom": "workspace:*",
+    "@ming/features-history-api": "workspace:*",
+    "@ming/features-search-api": "workspace:*",
+    "@ming/features-account-api": "workspace:*"
   },
   "peerDependencies": {
     "react": "^18.2.0",

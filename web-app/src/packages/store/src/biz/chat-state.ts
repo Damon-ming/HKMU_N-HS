@@ -4,15 +4,19 @@ import { createAppStore } from "../app-store";
 export interface ChatUiState {
   drawerOpen: boolean;
   sessionId: number;
+  activeHistoryId: string | null;
   toggleDrawer: () => void;
   resetSession: () => void;
+  setActiveHistoryId: (id: string) => void;
 }
 
 export const useChatUiStore = createAppStore<ChatUiState>((set) => ({
   drawerOpen: true,
   sessionId: 0,
+  activeHistoryId: null,
   toggleDrawer: () => set((state) => ({ drawerOpen: !state.drawerOpen })),
   resetSession: () => set((state) => ({ sessionId: state.sessionId + 1 })),
+  setActiveHistoryId: (activeHistoryId) => set({ activeHistoryId }),
 }));
 
 // Chat 消息交互状态：只负责输入、消息和发送过程。

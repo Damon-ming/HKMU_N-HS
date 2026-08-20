@@ -1,5 +1,5 @@
 import { useChatMessageStore } from "@ming/store/biz/chat-state";
-import { ChatRoomMessage, ChatRoomRequest } from "../types";
+import { ChatRoomRequest } from "../api/types";
 import { sendChatRoomMessage, streamChatRoomMessage } from "../api";
 import { createLogger } from "@ming/core-log";
 
@@ -69,7 +69,6 @@ export function chatMessageHook() {
       return;
     }
     log.debug("sendStream started", { queryLength: query.length });
-
     const userMsgId = `user-${Date.now()}`;
     const assistantMsgId = `assistant-${Date.now()}`;
 

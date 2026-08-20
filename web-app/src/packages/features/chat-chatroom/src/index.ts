@@ -1,3 +1,3 @@
 export * from './ui'
-export * from './types'
+export type * from './api/types'
 export { chatUploadHook } from './hook'

@@ -1,6 +1,6 @@
 import { uploadFile as requestUploadFile } from '../api'
 import type { BizApiResponse } from '@ming/biz-common-net-api'
-import type { UploadRequest, UploadResponse } from '../types/types'
+import type { UploadRequest, UploadResponse } from '../api/types'
 import { createLogger } from '@ming/core-log'
 
 const log = createLogger('upload/hook')
@@ -20,7 +20,7 @@ function createUploadRequest(files: File[]): UploadRequest {
     throw new Error('仅支持 PDF、Excel、PNG、JPEG、CSV 文件')
   }
   if (files.some(file => file.size > 10 * 1024 * 1024)) throw new Error('单个大小不能超过 10MB')
-  return { files, requestId: Date.now(), requestedAt: Date.now() }
+  return { files, requestId: String(Date.now()), requestedAt: Date.now() }
 }
 
 export async function uploadFile(files: File[]): Promise<BizApiResponse<UploadResponse>> {

@@ -1,51 +1,22 @@
-import React, { useMemo, useState } from "react"
-import { getHistoryList } from "@ming/features-history-api"
-import { searchHistory } from "@ming/features-search-api"
-import { getCurrentAccount } from "@ming/features-account-api"
-import { useUploadApi } from "@ming/features-upload-api"
-import { useChatUploadStore } from "@ming/store/biz/chat-state"
+import React from "react";
+import { useDrawerHook } from "../hook";
 
-export interface ChatDrawerProps {
-  open: boolean;
-  onToggle: () => void;
-  onNewChat: () => void;
-  onSelectChat?: (id: string) => void;
-}
-
-export const ChatDrawer: React.FC<ChatDrawerProps> = ({
-  open,
-  onToggle,
-  onNewChat,
-  onSelectChat,
-}) => {
-  const [search, setSearch] = useState("");
-  const uploading = useChatUploadStore((state) => state.upload.status === "uploading");
-  const startUpload = useChatUploadStore((state) => state.startUpload);
-  const finishUpload = useChatUploadStore((state) => state.finishUpload);
-  const items = useMemo(
-    () => (search ? searchHistory(search) : getHistoryList()),
-    [search],
-  );
-  const account = getCurrentAccount();
-  const onUploadFile = async (fileList?: FileList | null) => {
-    const files = fileList ? Array.from(fileList) : [];
-    if (!files.length) return;
-    startUpload(files.map((file) => file.name));
-    try {
-      const response = await useUploadApi(files);
-      // dataApi 已将服务端成功响应解包为 { bizCode, data }。
-      // 只要业务码是成功码，就不能因为展示字段缺失而误报上传失败。
-      if (response.bizCode >= 40000) {
-        throw new Error("服务端返回上传失败");
-      }
-      const resultFiles = Array.isArray(response.data?.files) ? response.data.files : [];
-      const allIndexed = resultFiles.length === 0 || resultFiles.every((file) => file.indexed || file.duplicate);
-      finishUpload("success", allIndexed ? "文件已经进入语料库" : "文件已上传，部分词条仍在更新", resultFiles);
-    } catch (e) {
-      const error = e as { errData?: { error_msg?: string }; clientErrData?: { message?: string } };
-      finishUpload("error", error.errData?.error_msg ?? error.clientErrData?.message ?? (e instanceof Error ? e.message : "文件上传失败"));
-    }
-  };
+export const ChatDrawer: React.FC = () => {
+  const {
+    open,
+    toggle,
+    list,
+    groups,
+    activeId,
+    account,
+    openSearch,
+    openAccount,
+    upload,
+    newChat,
+    selectChat,
+    uploadFiles,
+    deleteHistory,
+  } = useDrawerHook();
   return (
     <aside className={`feature-chat-drawer ${open ? "" : "is-collapsed"}`}>
       {open ? (
@@ -53,57 +24,89 @@ export const ChatDrawer: React.FC<ChatDrawerProps> = ({
           <div className="feature-drawer-top">
             <div className="feature-brand">✦</div>
             <strong>Ming AI</strong>
-            <button onClick={onToggle}>‹</button>
+            <button onClick={toggle}>‹</button>
           </div>
-          <button className="feature-new-chat" onClick={onNewChat}>
+          <button className="feature-new-chat" onClick={newChat}>
             ＋ 新建对话
           </button>
           <label className="feature-upload-file">
-            <span>{uploading ? "◌ 正在上传文件..." : "⌁ 上传文件"}</span>
-            <input hidden multiple accept=".pdf,.xls,.xlsx,.png,.jpg,.jpeg,.csv" type="file" onChange={(e) => onUploadFile(e.target.files)} />
-          </label>
-          <label className="feature-search">
-            ⌕
+            <span>
+              {upload.status === "uploading"
+                ? "◌ 正在上传文件..."
+                : "⌁ 上传文件"}
+            </span>
             <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="搜索对话"
+              hidden
+              multiple
+              accept=".pdf,.xls,.xlsx,.png,.jpg,.jpeg,.csv"
+              type="file"
+              onChange={(event) => uploadFiles(event.target.files)}
             />
           </label>
+          <button type="button" className="feature-search" onClick={openSearch}>
+            ⌕<span>搜索对话</span>
+          </button>
           <div className="feature-history-title">
-            最近对话 <span>{items.length}</span>
+            最近对话 <span>{list.length}</span>
           </div>
           <nav>
-            {items.map((item) => (
-              <button
-                className="feature-history-item"
-                key={item.id}
-                onClick={() => onSelectChat?.(item.id)}
-              >
-                ◌ <span>{item.title}</span>
-                <small>{item.meta}</small>
-              </button>
+            {groups.map((group) => (
+              <React.Fragment key={group.label}>
+                <div className="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  {group.label}
+                </div>
+                {group.items.map((item) => (
+                  <button
+                    className={`feature-history-item ${activeId === item.id ? "is-active" : ""}`}
+                    key={item.id}
+                    onClick={() => selectChat(item.id)}
+                  >
+                    ◌ <span>{item.title}</span>
+                    <i
+                      role="button"
+                      tabIndex={0}
+                      title="删除记录"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        deleteHistory(item.id);
+                      }}
+                    >
+                      ×
+                    </i>
+                  </button>
+                ))}
+              </React.Fragment>
             ))}
           </nav>
-          <div className="feature-user">
+          <button
+            className="feature-user"
+            type="button"
+            onClick={() => openAccount(account.name)}
+          >
             <span>{account.avatarText}</span>
             <strong>{account.name}</strong>
-          </div>
+            <small>账户设置 ›</small>
+          </button>
         </>
       ) : (
         <div className="feature-collapsed-tools">
-          <button onClick={onToggle} aria-label="展开抽屉">
+          <button onClick={toggle} aria-label="展开抽屉">
             ☰
           </button>
-          <button onClick={onToggle} aria-label="搜索">
+          <button onClick={openSearch} aria-label="搜索">
             ⌕
           </button>
-          <button onClick={onNewChat} aria-label="新建对话">
+          <button onClick={newChat} aria-label="新建对话">
             ＋
           </button>
-          <label className="feature-collapsed-upload" aria-label="上传图片">
+          <label className="feature-collapsed-upload" aria-label="上传文件">
             ⌁
-            <input hidden multiple accept=".pdf,.xls,.xlsx,.png,.jpg,.jpeg,.csv" type="file" onChange={(e) => onUploadFile(e.target.files)} />
+            <input
+              hidden
+              multiple
+              type="file"
+              onChange={(event) => uploadFiles(event.target.files)}
+            />
           </label>
         </div>
       )}

@@ -8,6 +8,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
   const send = sendStream;
 
   const messageContainerRef = useRef<HTMLDivElement>(null);
+  const composerInputRef = useRef<HTMLTextAreaElement>(null);
   const [isUserScrollUp, setIsUserScrollUp] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
@@ -48,6 +49,12 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
     if (!container || isUserScrollUp) return;
     container.scrollTop = container.scrollHeight;
   }, [messages, isUserScrollUp]);
+
+  useEffect(() => {
+    if (!sending) {
+      window.requestAnimationFrame(() => composerInputRef.current?.focus());
+    }
+  }, [sending]);
 
   return (
     <main
@@ -122,6 +129,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
         )}
         <footer className="feature-composer">
           <textarea
+            ref={composerInputRef}
             className="w-full resize-y overflow-auto whitespace-pre-wrap"
             value={input}
             onChange={(e) => setInput(e.target.value)}

@@ -6,11 +6,13 @@
     "dev": "pnpm dev:main",
     "dev:main": "cd src/app/main && pnpm dev",
     "build": "cd src/app/main && pnpm build",
-    "build:docker": "cd src/app/main && pnpm build" 
+    "build:docker": "cd src/app/main && pnpm build"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.7.0"
   }
 }

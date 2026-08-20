@@ -1,5 +1,5 @@
 import { dataApi } from "@ming/data-layer";
-import type { ChatRoomApiResponse, ChatRoomRequest, ChatSseMessage } from "../types";
+import type { ChatRoomApiResponse, ChatRoomRequest, ChatSseMessage } from "./types";
 import { createLogger } from "@ming/core-log";
 
 const log = createLogger("chat-chatroom/api");

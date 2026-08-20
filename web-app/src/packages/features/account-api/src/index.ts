@@ -1,2 +1,3 @@
-export * from './types'
-export * from './api'
+export { getCurrentAccount, updateAccount } from "./api/account-api.api"
+export { useAccount } from "./api/account-api.api"
+export type { AccountProfile } from "./api/account-api.api"

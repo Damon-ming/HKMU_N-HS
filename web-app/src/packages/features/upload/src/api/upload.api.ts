@@ -1,6 +1,6 @@
 import { dataApi } from '@ming/data-layer'
 import type { BizApiResponse } from '@ming/biz-common-net-api'
-import type { UploadRequest, UploadResponse } from '../types/types'
+import type { UploadRequest, UploadResponse } from './types'
 import { createLogger } from '@ming/core-log'
 
 const log = createLogger('upload/api')

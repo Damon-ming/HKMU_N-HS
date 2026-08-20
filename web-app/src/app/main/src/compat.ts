@@ -25,7 +25,7 @@ function createRandomUuid(): string {
 
 function installCryptoRandomUuidPolyfill() {
   const cryptoApi = globalThis.crypto
-  if (cryptoApi?.randomUUID) return
+  if (typeof cryptoApi?.randomUUID === 'function') return
 
   if (cryptoApi) {
     Object.defineProperty(cryptoApi, 'randomUUID', {

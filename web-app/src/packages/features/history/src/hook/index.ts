@@ -1,1 +1,1 @@
-export {}
+export { useHistory, historyActions } from "./HistoryHook"

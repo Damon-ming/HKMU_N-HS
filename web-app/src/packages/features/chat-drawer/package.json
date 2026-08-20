@@ -8,7 +8,8 @@
     "@ming/features-history-api": "workspace:*",
     "@ming/features-search-api": "workspace:*",
     "@ming/features-account-api": "workspace:*",
-    "@ming/features-upload-api": "workspace:*"
+    "@ming/features-upload-api": "workspace:*",
+    "@ming/core-util": "workspace:*"
   },
   "peerDependencies": { "react": "^18.2.0" }
 }
