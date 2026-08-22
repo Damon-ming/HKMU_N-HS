@@ -10,11 +10,16 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const composerInputRef = useRef<HTMLTextAreaElement>(null);
   const [isUserScrollUp, setIsUserScrollUp] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const scrollTimerRef = useRef<number | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
 
   const handleScroll = () => {
     const container = messageContainerRef.current;
     if (!container) return;
+    setIsScrolling(true);
+    if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = window.setTimeout(() => setIsScrolling(false), 700);
     const { scrollTop, scrollHeight, clientHeight } = container;
     const isAtBottom = scrollHeight - scrollTop - clientHeight < 10;
     setIsUserScrollUp(!isAtBottom);
@@ -56,6 +61,10 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
     }
   }, [sending]);
 
+  useEffect(() => () => {
+    if (scrollTimerRef.current !== null) window.clearTimeout(scrollTimerRef.current);
+  }, []);
+
   return (
     <main
       className={`feature-chatroom ${messages.length ? "has-messages" : "is-empty"}`}
@@ -63,7 +72,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
       {messages.length > 0 && (
         <section
           ref={messageContainerRef}
-          className="feature-messages flex flex-col gap-8"
+          className={`feature-messages flex flex-col gap-8 ${isScrolling ? "is-scrolling" : ""}`}
           onScroll={handleScroll}
           style={{ overflowY: "auto", flex: 1 }}
         >
@@ -74,6 +83,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
                 className={`feature-message-row flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 <div className={`feature-message-shell ${message.role}`}>
+                  <div className={`feature-message-bubble ${message.role}`}>
                   <div
                     className={`feature-message ${message.role}`}
                     style={{
@@ -101,6 +111,7 @@ export const ChatChatroom: React.FC<ChatChatroomProps> = () => {
                   >
                     {copiedMessageId === message.id ? "✓" : "⧉"}
                   </button>
+                  </div>
                 </div>
               </div>
             );
